@@ -16,3 +16,7 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/thomasp85/fawkes
 BugReports: https://github.com/thomasp85/fawkes/issues
+Imports: 
+    reticulate,
+    fs,
+    rlang
