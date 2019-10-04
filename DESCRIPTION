@@ -1,0 +1,16 @@
+Package: fawkes
+Title: An Interface to the AxiDraw plotter
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Thomas Lin",
+           family = "Pedersen",
+           role = c("aut", "cre"),
+           email = "thomasp85@gmail.com",
+           comment = c(ORCID = "0000-0002-5147-4711"))
+Description: Provides interface to the AxiDraw pen plotter through the python
+    API. 'fawkes' contain both a graphic device that allows you to control the
+    plotter through the R graphic engine, as well as facilities to control it
+    directly.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
