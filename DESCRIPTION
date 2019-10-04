@@ -1,5 +1,5 @@
 Package: fawkes
-Title: An Interface to the AxiDraw plotter
+Title: An R Interface to the AxiDraw plotter
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Thomas Lin",
