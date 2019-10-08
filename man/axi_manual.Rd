@@ -27,18 +27,18 @@ The following methods are available to the returned object:
 \itemize{
 \item \code{connect()}: Start a connection to the plotter.
 \item \code{disconnect()}: End a connection to the plotter.
-\item \code{goto()}: Move the plotter head to the absolute (x, y) position.
-\item \code{moveto()}: Move the plotter head to the absolute (x, y) position, raising
+\item \code{go_to()}: Move the plotter head to the absolute (x, y) position.
+\item \code{move_to()}: Move the plotter head to the absolute (x, y) position, raising
 the head if not already up.
-\item \code{lineto()}: Move the plotter head to the absolute (x, y) position, lowering
+\item \code{line_to()}: Move the plotter head to the absolute (x, y) position, lowering
 the head if not already down.
-\item \code{go()}: Move the plotter head with the relative (x, y) amount.
-\item \code{move()}: Move the plotter head with the relative (x, y) amount, raising
+\item \code{go_rel()}: Move the plotter head with the relative (x, y) amount.
+\item \code{move_rel()}: Move the plotter head with the relative (x, y) amount, raising
 the head if not already up.
-\item \code{line()}: Move the plotter head with the relative (x, y) amount, lowering
+\item \code{line_rel()}: Move the plotter head with the relative (x, y) amount, lowering
 the head if not already down.
-\item \code{penup()}: Raise the pen head.
-\item \code{pendown()}: Lower the pen head.
+\item \code{pen_up()}: Raise the pen head.
+\item \code{pen_down()}: Lower the pen head.
 }
 }
 
