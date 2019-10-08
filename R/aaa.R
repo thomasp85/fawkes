@@ -1,3 +1,29 @@
+#' Install the AxiDraw python API
+#'
+#' This function will download and install the AxiDraw python API for use with
+#' reticulate. It is necessary to have this installed in order to use any of the
+#' functionality in the fawkes package.
+#'
+#' @param path The path to the AxiDraw API. If NULL it will be downloaded
+#' automatically.
+#' @inheritDotParams reticulate::py_install -packages
+#'
+#' @export
+install_axidraw <- function(path = NULL, ...) {
+  if (is.null(path)) {
+    dir <- tempfile('pyaxidraw')
+    archive <- tempfile('pyaxidraw.zip')
+    dir.create(dir, recursive = TRUE)
+    utils::download.file('https://cdn.evilmadscientist.com/dl/ad/public/AxiDraw_API.zip', archive)
+    utils::unzip(archive, exdir = dir)
+    path <- as.character(fs::dir_ls(dir))[1]
+    unlink(archive)
+    on.exit(unlink(dir, recursive = TRUE))
+  }
+  reticulate::py_install(path, ...)
+  invisible(NULL)
+}
+
 import_axidraw <- function() {
   reticulate::use_virtualenv('r-fawkes', TRUE)
   axidraw <- try(reticulate::import('pyaxidraw'))

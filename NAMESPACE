@@ -2,5 +2,6 @@
 
 export(axi_manual)
 export(axi_svg)
+export(install_axidraw)
 export(manual_options)
 export(svg_options)
