@@ -137,3 +137,13 @@ expand_margins <- function(margins) {
     margins
   )
 }
+last <- function(x) x[[length(x)]]
+`last<-` <- function(x, value) {
+  x[[length(x)]] <- value
+  x
+}
+first <- function(x) x[[1]]
+`first<-` <- function(x, value) {
+  x[[1]] <- value
+  x
+}

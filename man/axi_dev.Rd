@@ -54,7 +54,14 @@ values it defines top, right, bottom, left.}
 }
 \description{
 This call opens up a graphic device that takes plotting instructions from
-e.g. \code{plot()} or ggplot2.
+e.g. \code{plot()} or ggplot2, and renders it with the AxiDraw.
+}
+\details{
+At the moment the device will ignore colour information and will only draw
+the stroke of objects. Further, any linetype information is lost. It will try
+to match the linewidth, but can obviously not draw something thinner than the
+tip of the pen. Clipping is, incredibly, supported, but text is not. Most of
+the restrictions above will be handled with time.
 }
 \note{
 \strong{UNDER CONSTRUCTION}
