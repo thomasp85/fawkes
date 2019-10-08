@@ -25,12 +25,15 @@ install_axidraw <- function(path = NULL, ...) {
 }
 
 import_axidraw <- function() {
-  reticulate::use_virtualenv('r-fawkes', TRUE)
-  axidraw <- try(reticulate::import('pyaxidraw'))
+  axidraw <- try(reticulate::import('pyaxidraw.axidraw'))
   if (inherits(axidraw, 'try-error')) {
-    rlang::abort('pyaxidraw could not be loaded. Make sure you have installed the library')
+    rlang::abort('pyaxidraw could not be loaded.\nMake sure you have installed the library using `install_axidraw()`')
   }
-  axidraw$AxiDraw()
+  ad <- try(axidraw$AxiDraw())
+  if (inherits(ad, 'try-error')) {
+    rlang::abort('AxiDraw class could not be initiated.\nMake sure your AxiDraw is connected.')
+  }
+  ad
 }
 
 paper_dimensions <- function(name, portrait = TRUE) {
