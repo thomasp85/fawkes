@@ -41,9 +41,13 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 0, tip_size = 
                     options = list()) {
   size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
+  size <- size - c(margins[2] + margins[4], margins[1] + margins[3])
+  if (any(size <= 0)) {
+    rlang::abort("margins larger than the paper size")
+  }
   axidraw <- axi_manual(options)
   devout::rdevice("axidraw_callback", ad = axidraw, size = size, flip = portrait,
-    margins = margins, tip_size = tip_size, color = color,
+    offset = margins[c(1, 4)], tip_size = tip_size, color = color,
     ignore_color = ignore_color, draw_fill = draw_fill,
     connect_hatch = connect_hatch, hatch_gap = hatch_gap,
     hatch_angle = hatch_angle, crosshatch = crosshatch,

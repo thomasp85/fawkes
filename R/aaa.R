@@ -41,6 +41,9 @@ paper_dimensions <- function(name, portrait = TRUE) {
     if (!length(name) == 2) {
       rlang::abort('paper_size must be a numeric vector with width and height in mm')
     }
+    if (any(name <= 0)) {
+      rlang::abort("Dimensions must be positive")
+    }
     size <- name
   } else {
     if (!is.character(name) || length(name) != 1) {
