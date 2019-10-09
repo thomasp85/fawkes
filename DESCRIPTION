@@ -22,6 +22,9 @@ Imports:
     rlang,
     utils,
     R6,
-    polyclip
+    polyclip,
+    cli
+Remotes: 
+    r-lib/cli
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)

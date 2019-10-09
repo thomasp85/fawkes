@@ -4,11 +4,10 @@
 \alias{axi_dev}
 \title{A graphic device that renders using the AxiDraw pen plooter}
 \usage{
-axi_dev(paper_size = "A4", portrait = TRUE, margins = 0,
+axi_dev(paper_size = "A4", portrait = TRUE, margins = 20,
   tip_size = 1, color = "black", ignore_color = TRUE,
-  draw_fill = TRUE, connect_hatch = TRUE, hatch_gap = 0,
-  hatch_angle = 0, crosshatch = FALSE, optimise_order = TRUE,
-  options = list())
+  ignore_lwd = FALSE, line_overlap = 0.1, draw_fill = TRUE,
+  optimize_order = "none", options = list())
 }
 \arguments{
 \item{paper_size}{The size of the paper to draw on, either as a numeric
@@ -25,21 +24,16 @@ the initial pen}
 \item{ignore_color}{Logical. Should changes in color output be ignored? If
 \code{TRUE} the plotter will not pause for pen change when the colour changes}
 
+\item{ignore_lwd}{Logical. Should the device ignore the lwd and also just
+draw lines as a single pen stroke?}
+
+\item{line_overlap}{The overlap between adjacent pen strokes when filling out
+shapes and drawing thick lines, in mm. Setting this to a negative amount will
+cause gaps between the lines.}
+
 \item{draw_fill}{Logical. Should fill be drawn using hatching?}
 
-\item{connect_hatch}{Logical. Should the hatchline be drawn as connected?}
-
-\item{hatch_gap}{The gap between hatchlines in mm. Set to \code{0} to draw as
-continuous fill. Set to \code{'alpha'} to let it be determined by the alpha
-component of the fill color.}
-
-\item{hatch_angle}{The angle of the hatch lines in degrees. Set to \code{'random'}
-to pick a random angle for each fill. Set to \code{'auto'} to pick the best angle
-for each fill.}
-
-\item{crosshatch}{Logical. Should fill be drawn with cross-hatching?}
-
-\item{optimise_order}{Logical. Should the drawing order be optimised so that
+\item{optimize_order}{Logical. Should the drawing order be optimised so that
 pen movement is minimised? Will only affect consecutive calls to the same
 drawing primitive.}
 

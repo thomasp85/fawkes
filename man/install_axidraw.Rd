@@ -12,13 +12,18 @@ automatically.}
 
 \item{...}{Arguments passed on to \code{reticulate::py_install}
 \describe{
-  \item{envname}{Name of environment to install packages into}
+  \item{envname}{The name, or full path, of the environment in which Python
+packages are to be installed. When \code{NULL} (the default), the active
+environment as set by the \code{RETICULATE_PYTHON_ENV} variable will be used;
+if that is unset, then the \code{r-reticulate} environment will be used.}
   \item{method}{Installation method. By default, "auto" automatically finds a
 method that will work in the local environment. Change the default to force
 a specific installation method. Note that the "virtualenv" method is not
 available on Windows.}
   \item{conda}{Path to conda executable (or "auto" to find conda using the
 PATH and other conventional install locations).}
+  \item{python_version}{The requested Python version. Ignored when attempting
+to install with a Python virtual environment.}
 }}
 }
 \description{
