@@ -43,6 +43,14 @@
 #' @importFrom devout rdevice
 #' @export
 #'
+#' @examples
+#' gd <- ghost_dev('A6')
+#' plot(cars)
+#' lines(lowess(cars))
+#' invisible(dev.off())
+#'
+#' gd$plot(plot_air = TRUE)
+#'
 axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
                     color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
                     line_overlap = 0.1, draw_fill = TRUE, hatch_angle = 45,

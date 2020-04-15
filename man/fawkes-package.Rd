@@ -4,7 +4,7 @@
 \name{fawkes-package}
 \alias{fawkes}
 \alias{fawkes-package}
-\title{fawkes: An R Interface to the AxiDraw plotter}
+\title{fawkes: An R Interface to the AxiDraw Plotter}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
@@ -16,6 +16,7 @@ Provides interface to the AxiDraw pen plotter through the python
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://fawkes.data-imaginist.com}
   \item \url{https://github.com/thomasp85/fawkes}
   \item Report bugs at \url{https://github.com/thomasp85/fawkes/issues}
 }

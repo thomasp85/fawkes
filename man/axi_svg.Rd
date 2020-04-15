@@ -60,3 +60,8 @@ capabilities of the pyaxidraw library so rendering an svg with
 \code{\link[grDevices:svg]{grDevices::svg()}} and then using \code{axi_svg} to draw it will likely produce
 a different result than rendering directly to \code{\link[=axi_dev]{axi_dev()}}.
 }
+\examples{
+logo <- system.file('example.svg', package = 'fawkes')
+logo_penned <- axi_svg(logo, capture = TRUE)
+
+}

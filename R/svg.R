@@ -30,6 +30,11 @@
 #' will be used for drawing.
 #'
 #' @export
+#'
+#' @examples
+#' logo <- system.file('example.svg', package = 'fawkes')
+#' logo_penned <- axi_svg(logo, capture = TRUE)
+#'
 axi_svg <- function(file, capture = FALSE, options = axi_options(),
                     layer = NULL, copies = 1L, page_delay = 15,
                     auto_rotate = TRUE, rendering = 'all', reorder = 'none',

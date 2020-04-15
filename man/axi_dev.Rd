@@ -88,3 +88,12 @@ to match the linewidth, but can obviously not draw something thinner than the
 tip of the pen. Clipping is, incredibly, supported, but text is not. Most of
 the restrictions above will be handled with time.
 }
+\examples{
+gd <- ghost_dev('A6')
+plot(cars)
+lines(lowess(cars))
+invisible(dev.off())
+
+gd$plot(plot_air = TRUE)
+
+}
