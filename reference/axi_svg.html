@@ -84,7 +84,7 @@ a different result than rendering directly to axi_dev()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fawkes</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -209,6 +209,12 @@ together).</p></td>
     <p>If <code>capture = TRUE</code> a new svg showing the pen plotter movement that
 will be used for drawing.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>logo</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'example.svg'</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>'fawkes'</span>)
+<span class='no'>logo_penned</span> <span class='kw'>&lt;-</span> <span class='fu'>axi_svg</span>(<span class='no'>logo</span>, <span class='kw'>capture</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; Error in py_module_import(module, convert = convert) : 
+#&gt;   ImportError: No module named pyaxidraw.axidraw</div><div class='output co'>#&gt; <span class='error'>Error: pyaxidraw could not be loaded.</span>
+#&gt; <span class='error'>Make sure you have installed the library using `install_axidraw()`</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
