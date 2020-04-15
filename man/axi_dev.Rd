@@ -90,6 +90,7 @@ the restrictions above will be handled with time.
 }
 \examples{
 gd <- ghost_dev('A6')
+par(mar = c(0, 0, 0, 0))
 plot(cars)
 lines(lowess(cars))
 invisible(dev.off())
