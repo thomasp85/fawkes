@@ -14,7 +14,7 @@ Description: Provides interface to the AxiDraw pen plotter through the python
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/thomasp85/fawkes
+URL: https://fawkes.data-imaginist.com, https://github.com/thomasp85/fawkes
 BugReports: https://github.com/thomasp85/fawkes/issues
 Imports: 
     reticulate,
@@ -23,8 +23,10 @@ Imports:
     utils,
     R6,
     polyclip,
-    cli
+    cli,
+    devout,
+    TSP
 Remotes: 
-    r-lib/cli
-RoxygenNote: 6.1.1
+    coolbutuseless/devout
+RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)

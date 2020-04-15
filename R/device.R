@@ -1,7 +1,9 @@
 #' A graphic device that renders using the AxiDraw pen plooter
 #'
-#' This call opens up a graphic device that takes plotting instructions from
-#' e.g. `plot()` or ggplot2, and renders it with the AxiDraw.
+#' `axi_dev()` opens up a graphic device that takes plotting instructions from
+#' e.g. `plot()` or ggplot2, and renders it with the AxiDraw. `ghost_dev()`
+#' behaves like `axi_dev()`, but instead of sending instructions to the plotter
+#' it will collect them and allow you to preview the movement of the pen.
 #'
 #' At the moment the device will ignore colour information and will only draw
 #' the stroke of objects. Further, any linetype information is lost. It will try
@@ -13,7 +15,7 @@
 #' vector  giving dimensions in mm, or as a standard paper size name.
 #' @param portrait Logical. Is the paper oriented as portrait
 #' (i.e. width < height). Will rearrange given paper dimensions to fit.
-#' @param margins. The margins of the paper, in mm. The spec follows that of css,
+#' @param margins The margins of the paper, in mm. The spec follows that of css,
 #' meaning that if it is given as a single value it defines all margins, if
 #' given as two values it defines top/bottom, left/right, if it is given as
 #' three values it defines top, left/right, bottom, and if it is given as four
@@ -29,18 +31,22 @@
 #' shapes and drawing thick lines, in mm. Setting this to a negative amount will
 #' cause gaps between the lines.
 #' @param draw_fill Logical. Should fill be drawn using hatching?
+#' @param hatch_angle Angle in degrees that the hatching of fill should be drawn
+#' with.
 #' @param optimize_order Logical. Should the drawing order be optimised so that
 #' pen movement is minimised? Will only affect consecutive calls to the same
 #' drawing primitive.
-#' @param options A list of options for the AxiDraw. Use [manual_options()] for
-#' help with creating a valid list of options.
+#' @param options An `axi_options` object. See the documentation for
+#' [axi_options()] for all the settings.
 #'
-#' @note **UNDER CONSTRUCTION**
+#' @importFrom grDevices col2rgb rgb
+#' @importFrom devout rdevice
+#' @export
 #'
 axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
                     color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
-                    line_overlap = 0.1, draw_fill = TRUE,
-                    optimize_order = 'none', options = list()) {
+                    line_overlap = 0.1, draw_fill = TRUE, hatch_angle = 45,
+                    optimize_order = 'all', options = axi_options()) {
   paper_size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
   size <- paper_size - c(margins[2] + margins[4], margins[1] + margins[3])
@@ -49,15 +55,47 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
   }
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
-  axidraw <- axi_manual(options)
-  devout::rdevice("axidraw_callback", ad = axidraw, size = size, flip = portrait,
-    offset = margins[c(4, 1)], p_width = paper_size[1], tip_size = tip_size,
-    color = color, ignore_color = ignore_color, ignore_lwd = ignore_lwd,
-    line_overlap = line_overlap, draw_fill = draw_fill,
-    optimize_order = optimize_order, collection = list(),
-    current_primitive = NA)
+  axidraw <- axi_manual(units = 'cm', options)
+  info <- list2env(list(
+    ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
+    p_width = paper_size[1], tip_size = tip_size, color = color,
+    ignore_color = ignore_color, ignore_lwd = ignore_lwd,
+    line_overlap = line_overlap, draw_fill = draw_fill, hatch_angle = hatch_angle,
+    optimize_order = optimize_order, collection = list(), current_primitive = '',
+    first_page = TRUE
+  ), parent = emptyenv())
+  rdevice("axidraw_callback", info = info)
 }
-
+#' @rdname axi_dev
+#' @export
+ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
+                     color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
+                     line_overlap = 0.1, draw_fill = TRUE, hatch_angle = 45,
+                     optimize_order = 'all', options) {
+  axidraw <- axi_ghost(units = 'cm', paper = paper_size)
+  paper_size <- paper_dimensions(paper_size, portrait)
+  margins <- expand_margins(margins)
+  size <- paper_size - c(margins[2] + margins[4], margins[1] + margins[3])
+  if (any(size <= 0)) {
+    rlang::abort("margins larger than the paper size")
+  }
+  color <- as.vector(col2rgb(color, TRUE))
+  optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
+  info <- list2env(list(
+    ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
+    p_width = paper_size[1], tip_size = tip_size, color = color,
+    ignore_color = ignore_color, ignore_lwd = ignore_lwd,
+    line_overlap = line_overlap, draw_fill = draw_fill, hatch_angle = hatch_angle,
+    optimize_order = optimize_order, collection = list(), current_primitive = '',
+    first_page = TRUE
+  ), parent = emptyenv())
+  rdevice("axidraw_callback", info = info)
+  invisible(axidraw)
+}
+#' Callbacks for the fawkes devices
+#'
+#' @keywords internal
+#' @export
 axidraw_callback <- function(device_call, args, state) {
   state <- switch(device_call,
     open = .axi_open(args, state),
@@ -75,18 +113,20 @@ axidraw_callback <- function(device_call, args, state) {
 }
 
 .axi_open <- function(args, state) {
-  state$dd$right <- state$size[1]
-  state$dd$bottom <- state$size[2]
-  state$dd$clipRight <- state$size[1]
-  state$dd$clipBottom <- state$size[2]
+  state$dd$right <- state$rdata$info$size[1]
+  state$dd$bottom <- state$rdata$info$size[2]
+  state$dd$clipRight <- state$rdata$info$size[1]
+  state$dd$clipBottom <- state$rdata$info$size[2]
   state$dd$ipr <- c(0.03937, 0.03937)
-  state$last_primitive <- NA
-  state$calls <- list()
-  state$ad$connect()
+  state$rdata$info$last_primitive <- NA
+  state$rdata$info$calls <- list()
+  state$rdata$info$ad$connect()
   state
 }
 .axi_close <- function(args, state) {
-  state$dd$disconnect()
+  draw_collection(state, NA)
+  state$rdata$info$ad$move_to(0, 0)
+  state$rdata$info$ad$disconnect()
   state
 }
 .axi_clip <- function(args, state) {
@@ -97,32 +137,37 @@ axidraw_callback <- function(device_call, args, state) {
   state
 }
 .axi_new_page <- function(args, state) {
-  state$ad$move_to(0, 0)
-  cli::cli_alert_warning("Change paper (press enter when ready for next page)")
-  readline()
+  state$rdata$info$ad$move_to(0, 0)
+  if (!state$rdata$info$first_page) {
+    cli::cli_alert_warning("Change paper (press enter when ready for next page)")
+    readline()
+  }
+  state$rdata$info$first_page <- FALSE
+  state
 }
 .axi_circle <- function(args, state) {
-  n_points <-  round((2 * pi) / acos((args$r - 0.5) / args$r));
+  n_points <-  round((2 * pi) / acos((args$r - 0.5) / args$r)) * 10;
   angles <- seq(0, 2*pi, length.out = n_points + 1)[-(n_points + 1)]
   shape <- list(
     x = cos(angles) * args$r + args$x,
     y = sin(angles) * args$r + args$y
   )
 
-  fill <- list()
-  stroke <- list()
-
   # Fill
   if (has_fill(state)) {
-
+    state <- update_fill(state, 'circle')
+    fill <- create_circle_fill(args$x, args$y, args$r, angles, state)
+    state <- collect_lines(fill, state)
   }
 
   # Stroke
   if (has_stroke(state)) {
+    state <- update_stroke(state, 'circle')
     stroke <- create_closed_stroke(list(shape), state)
+    state <- collect_lines(stroke, state)
   }
 
-  draw_shape(fill, stroke, args, state, 'circle')
+  state
 }
 .axi_rect <- function(args, state) {
   shape <- list(
@@ -130,20 +175,21 @@ axidraw_callback <- function(device_call, args, state) {
     y = c(args$y0, args$y1)[c(1, 1, 2, 2)]
   )
 
-  fill <- list()
-  stroke <- list()
-
   # Fill
   if (has_fill(state)) {
-
+    state <- update_fill(state, 'rect')
+    fill <- create_fill(shape, state)
+    state <- collect_lines(fill, state)
   }
 
   # Stroke
   if (has_stroke(state)) {
+    state <- update_stroke(state, 'rect')
     stroke <- create_closed_stroke(list(shape), state)
+    state <- collect_lines(stroke, state)
   }
 
-  draw_shape(fill, stroke, args, state, 'rect')
+  state
 }
 .axi_line <- function(args, state) {
   if (has_stroke(state)) {
@@ -151,10 +197,12 @@ axidraw_callback <- function(device_call, args, state) {
       x = c(args$x1, args$x2),
       y = c(args$y1, args$y2)
     )
-    stroke <- create_open_stroke(list(line), state)
 
-    draw_shape(list(), stroke, args, state, 'line')
+    state <- update_stroke(state, 'line')
+    stroke <- create_open_stroke(list(line), state)
+    state <- collect_lines(stroke, state)
   }
+  state
 }
 .axi_polyline <- function(args, state) {
   if (has_stroke(state)) {
@@ -162,10 +210,12 @@ axidraw_callback <- function(device_call, args, state) {
       x = args$x,
       y = args$y
     )
-    stroke <- create_open_stroke(list(line), state)
 
-    draw_shape(list(), stroke, args, state, 'polyline')
+    state <- update_stroke(state, 'polyline')
+    stroke <- create_open_stroke(list(line), state)
+    state <- collect_lines(stroke, state)
   }
+  state
 }
 .axi_polygon <- function(args, state) {
   shape <- list(
@@ -173,20 +223,21 @@ axidraw_callback <- function(device_call, args, state) {
     y = args$y
   )
 
-  fill <- list()
-  stroke <- list()
-
   # Fill
   if (has_fill(state)) {
-
+    state <- update_fill(state, 'polygon')
+    fill <- create_fill(list(shape), state)
+    state <- collect_lines(fill, state)
   }
 
   # Stroke
   if (has_stroke(state)) {
+    state <- update_stroke(state, 'polygon')
     stroke <- create_closed_stroke(list(shape), state)
+    state <- collect_lines(stroke, state)
   }
 
-  draw_shape(fill, stroke, args, state, 'polygon')
+  state
 }
 .axi_path <- function(args, state) {
   path_id <- rep(seq_len(args$npoly), args$nper)
@@ -196,44 +247,59 @@ axidraw_callback <- function(device_call, args, state) {
     list(x = x[[i]], y = y[[i]])
   })
 
-  fill <- list()
-  stroke <- list()
-
   # Fill
   if (has_fill(state)) {
-
+    state <- update_fill(state, 'path')
+    fill <- create_fill(path, state)
+    state <- collect_lines(fill, state)
   }
 
   # Stroke
   if (has_stroke(state)) {
+    state <- update_stroke(state, 'path')
     stroke <- create_closed_stroke(path, state)
+    state <- collect_lines(stroke, state)
   }
 
-  draw_shape(fill, stroke, args, state, 'path')
+  state
 }
 
 has_stroke <- function(state) {
-  state$gd$lwd != 0 && state$gd$col[4] != 0 && state$gd$lty != 0
+  state$gc$lwd != 0 && state$gc$col[4] != 0 # && state$gc$lty != 0
 }
 has_fill <- function(state) {
-  state$draw_fill && state$gd$fill[4 != 0]
+  state$rdata$info$draw_fill && state$gc$fill[4] != 0
+}
+update_fill <- function(state, primitive) {
+  if (!can_collect(state, primitive, 1L, list())) {
+    state <- draw_collection(state, primitive)
+    state <- update_pen(state, state$gc$fill)
+  }
+  state
+}
+update_stroke <- function(state, primitive) {
+  if (!can_collect(state, primitive, list(), 1L)) {
+    state <- draw_collection(state, primitive)
+    state <- update_pen(state, state$gc$col)
+  }
+  state
 }
 create_closed_stroke <- function(shapes, state) {
   stroke <- state$gc$lwd * 72 / 96
-  n_strokes <- ceiling(stroke / (state$tip_size - state$line_overlap))
-  if (state$ignore_lwd || stroke <= state$tip_size) {
+  n_strokes <- ceiling(stroke / (state$rdata$info$tip_size - state$rdata$info$line_overlap))
+  if (state$rdata$info$ignore_lwd || stroke <= state$rdata$info$tip_size) {
     clip_closed_stroke(shapes, state)
   } else {
     all_strokes <- lapply(shapes, function(path) {
       full_stroke <- polyclip::polylineoffset(
         path,
-        (stroke - state$tip_size) / 2,
+        (stroke - state$rdata$info$tip_size) / 2,
         jointype = joins[state$gc$ljoin],
         endtype = 'closedline',
         miterlim = state$gc$lmitre
       )
       full_stroke <- polyclip::polyclip(full_stroke, clip_box(state), 'intersection')
-      full_stroke <- lapply(full_stroke, fill_stroke, state$tip_size - state$line_overlap, n_strokes)
+      full_stroke <- lapply(full_stroke, fill_stroke, state$rdata$info$tip_size - state$rdata$info$line_overlap, n_strokes)
       unlist(full_stroke, recursive = FALSE, use.names = FALSE)
     })
     unlist(all_strokes, recursive = FALSE, use.names = FALSE)
@@ -241,30 +307,53 @@ create_closed_stroke <- function(shapes, state) {
 }
 create_open_stroke <- function(paths, state) {
   stroke <- state$gc$lwd * 72 / 96
-  n_strokes <- ceiling(stroke / (state$tip_size - state$line_overlap))
-  if (state$ignore_lwd || stroke <= state$tip_size) {
+  n_strokes <- ceiling(stroke / (state$rdata$info$tip_size - state$rdata$info$line_overlap))
+  if (state$rdata$info$ignore_lwd || stroke <= state$rdata$info$tip_size) {
     paths <- lapply(paths, polyclip::polyclip, clip_box(state), 'intersection', closed = FALSE)
     unlist(paths, recursive = FALSE, use.names = FALSE)
   } else {
     all_paths <- lapply(paths, function(path) {
       full_path <- polyclip::polylineoffset(
         path,
-        (stroke - state$tip_size) / 2,
+        (stroke - state$rdata$info$tip_size) / 2,
         jointype = joins[state$gc$ljoin],
         endtype = ends[state$gc$lend],
         miterlim = state$gc$lmitre
       )
       full_path <- polyclip::polyclip(full_path, clip_box(state), 'intersection')
-      full_path <- lapply(full_path, fill_stroke, state$tip_size - state$line_overlap, n_strokes)
+      full_path <- lapply(full_path, fill_stroke, state$rdata$info$tip_size - state$rdata$info$line_overlap, n_strokes)
       unlist(full_path, recursive = FALSE, use.names = FALSE)
     })
     unlist(all_paths, recursive = FALSE, use.names = FALSE)
   }
 }
+create_fill <- function(fill, state) {
+  fill <- polyclip::polyclip(fill, clip_box(state), 'intersection')
+  fill <- fill_shape(fill, state$rdata$info$tip_size, state$rdata$info$line_overlap, state$rdata$info$hatch_angle)
+}
+create_circle_fill <- function(x, y, r, angles, state) {
+  radii <- seq(r - state$rdata$info$tip_size / 2, 0, by = -(state$rdata$info$tip_size - state$rdata$info$line_overlap))
+  radii <- unique(c(radii, 0))
+  angles <- c(angles, angles[1])
+  cos_a <- cos(angles)
+  sin_a <- sin(angles)
+  bbox <- clip_box(state)
+  unlist(lapply(radii, function(r) {
+    if (r == 0) {
+      cos_a <- c(0, 0)
+      sin_a <- c(0, 0)
+    }
+    polyclip::polyclip(
+      list(x = cos_a * r + x, y = sin_a * r + y),
+      bbox,
+      'intersection'
+    )
+  }), recursive = FALSE)
+}
 clip_box <- function(state) {
   list(
-    x = c(state$dd$clipLeft, state$dd$clipRight)[c(1, 2, 2, 1)],
-    y = c(state$dd$clipTop, state$dd$clipBottom)[c(1, 1, 2, 2)]
+    x = c(state$dd$clipLeft - 1e5, state$dd$clipRight + 1e-5)[c(1, 2, 2, 1)],
+    y = c(state$dd$clipTop + 1e5, state$dd$clipBottom - 1e-5)[c(1, 1, 2, 2)]
   )
 }
 fill_stroke <- function(outline, stroke_width, n_strokes) {
@@ -280,6 +369,29 @@ fill_stroke <- function(outline, stroke_width, n_strokes) {
       use.names = FALSE
     )
   )
+}
+fill_shape <- function(shape, tip_width, overlap, angle = 45) {
+  shape <- polyclip::polyoffset(shape, -tip_width / 2)
+  bbox_x <- range(unlist(lapply(shape, `[[`, 'x')))
+  bbox_y <- range(unlist(lapply(shape, `[[`, 'y')))
+  max_length <- max(diff(bbox_x), diff(bbox_y))
+  x <- rep(seq(-max_length, max_length, by = tip_width - overlap), each = 2)
+  y <- rep(c(-max_length, max_length), length.out = length(x))
+  y <- c(y[-1], y[1])
+  theta <- 2 * pi * angle / 360
+  cos_t <- cos(theta)
+  sin_t <- sin(theta)
+  fill <- list(
+    x = x * cos_t - y * sin_t + mean(bbox_x),
+    y = y * cos_t + x * sin_t + mean(bbox_y)
+  )
+  fill <- polyclip::polyclip(list(fill), shape, 'intersection', closed = FALSE)
+  shape <- lapply(shape, function(x) {
+    x$x <- c(x$x, x$x[1])
+    x$y <- c(x$y, x$y[1])
+    x
+  })
+  c(fill, shape)
 }
 clip_closed_stroke <- function(shape, state) {
   cb <- clip_box(state)
@@ -307,102 +419,100 @@ clip_closed_stroke <- function(shape, state) {
   unlist(strokes, recursive = FALSE, use.names = FALSE)
 }
 
-draw_shape <- function(fill, stroke, args, state, primitive = NA) {
-  if (can_collect(state, primitive, fill, stroke)) {
-    collect_state(args, fill, stroke, state)
-  } else {
-    state <- draw_collection(state, new_primitive = primitive)
-    draw_or_collect(args, fill, stroke, state, primitive)
-  }
-}
 can_collect <- function(state, primitive, fill, stroke) {
-  if (state$optimize_order == 'none') return(FALSE)
-  if (state$optimize_order == 'primitive' &&
-      primitive != state$current_primitive) return(FALSE)
-  if (!state$ignore_color &&
-      !identical(state$gc$col[1:3], state$color[1:3]) &&
+  if (state$rdata$info$optimize_order == 'none') return(FALSE)
+  if (state$rdata$info$optimize_order == 'primitive' &&
+      primitive != state$rdata$info$current_primitive) return(FALSE)
+  if (!state$rdata$info$ignore_color &&
+      !identical(state$gc$col[1:3], state$rdata$info$color[1:3]) &&
       length(stroke) > 0) return(FALSE)
-  if (!state$ignore_color &&
-      !identical(state$gc$fill[1:3], state$color[1:3]) &&
+  if (!state$rdata$info$ignore_color &&
+      !identical(state$gc$fill[1:3], state$rdata$info$color[1:3]) &&
       length(fill) > 0) return(FALSE)
   TRUE
 }
-draw_or_collect <- function(args, fill, stroke, state, primitive) {
-  if (can_collect(state, primitive, fill, stroke)) {
-    collect_state(args, fill, stroke, state)
-  } else {
-    draw_primitive(fill, stroke, state)
-  }
-}
-collect_state <- function(args, fill, stroke, state) {
-  if (length(fill) != 0) {
-    start <- c(first(first(fill)$x), first(first(fill)$y))
-  } else {
-    start <- c(first(first(stroke)$x), first(first(stroke)$y))
-  }
-  if (length(stroke) != 0) {
-    end <- c(last(last(stroke)$x), last(last(stroke)$y))
-  } else {
-    end <- c(last(last(fill)$x), last(last(fill)$y))
-  }
-  state$collection <- c(state$collection, list(
+collect_lines <- function(lines, state) {
+  if (length(lines) == 0) return(state)
+  start <- c(first(first(lines)$x), first(first(lines)$y))
+  end <- c(last(last(lines)$x), last(last(lines)$y))
+  state$rdata$info$collection[[length(state$rdata$info$collection) + 1]] <- list(
     start = start,
     end = end,
-    fill = fill,
-    stroke = stroke
-  ))
+    lines = lines
+  )
+
   state
 }
 draw_collection <- function(state, new_primitive) {
-  # TODO add TSP sorting
-  lapply(state$collection, function(shape) {
-    draw_primitive(shape$fill, shape$stroke, state)
-  })
-  state$current_primitive <- new_primitive
-  state
-}
-draw_primitive <- function(fill, stroke, state) {
-  if (length(fill) > 0) {
-    state <- update_pen(state, state$gc$fill)
-    draw_lines(fill, state)
+  collection <- state$rdata$info$collection
+  if (length(collection) != 0) {
+    if (state$rdata$info$optimize_order != 'none') {
+      collection <- optimize_order(collection)
+    }
+    lapply(collection, function(shape) {
+      draw_lines(shape$lines, state)
+    })
+    state$rdata$info$collection <- list()
   }
-  if (length(stroke) > 0) {
-    state <- update_pen(state, state$gc$col)
-    draw_lines(stroke, state)
-  }
+  state$rdata$info$current_primitive <- new_primitive
   state
 }
 update_pen <- function(state, color) {
-  if (!state$ignore_color && any(state$color[1:3] != color[1:3])) {
-    state$ad$move_to(0, 0)
+  if (!state$rdata$info$ignore_color && any(state$rdata$info$color[1:3] != color[1:3])) {
+    state$rdata$info$ad$move_to(0, 0)
     col <- rgb(color[1], color[2], color[3], maxColorValue = 255)
     col_fmt <- cli::make_ansi_style(col, bg = TRUE)
     cli::cli_alert_warning("Please change pen color")
     cli::cli_alert_info("New color: {col_fmt('  ')} ({col})")
-    readline()
-    state$color <- color
+    cli::cli_alert_info("Enter new tip size (in mm) or leave blank to keep current {state$rdata$info$tip_size}mm")
+    tip_size <- readline()
+    if (tip_size != '') {
+      while (is.na(as.numeric(tip_size))) {
+        cli::cli_alert_warning('Invalid tip size `{tip_size}`. Enter a valid one:')
+        tip_size <- readline()
+        if (tip_size == '') break
+      }
+      if (tip_size != '') state$rdata$info$tip_size <- as.numeric(tip_size)
+    }
+    state$rdata$info$color <- color
   }
   state
 }
 draw_lines <- function(paths, state) {
-  ad <- state$ad
+  ad <- state$rdata$info$ad
+  is_ghost <- inherits(ad, 'AxiGhost')
   for (path in paths) {
+    if (length(path) == 0 || length(path$x) == 0) next
     path <- prepare_path(path, state)
     ad$move_to(first(path$x), first(path$y))
-    for (i in seq_along(path$x)[-1]) {
-      ad$line_to(path$x[i], path$y[i])
+    if (is_ghost) {
+      ad$line_to(path$x[-1], path$y[-1])
+    } else {
+      for (i in seq_along(path$x)[-1]) {
+        ad$line_to(path$x[i], path$y[i])
+      }
     }
   }
   ad$pen_up()
 }
 prepare_path <- function(path, state) {
-  path$x <- path$x + state$offset[1]
-  path$y <- path$y + state$offset[2]
-  if (state$flip) {
-    path$x <- -1 * (path$x - state$p_width)
+  path$x <- path$x + state$rdata$info$offset[1]
+  path$y <- path$y + state$rdata$info$offset[2]
+  if (state$rdata$info$flip) {
+    path$x <- -1 * (path$x - state$rdata$info$p_width)
     path[c('x', 'y')] <- path[c('y', 'x')]
   }
+  path$x <- path$x / 10
+  path$y <- path$y / 10
   path
 }
 joins <- c('round', 'mitre', 'bevel')
 ends <- c('openround', 'openbutt', 'opensquare')
+
+optimize_order <- function(paths) {
+  starts <- do.call(cbind, lapply(paths, `[[`, 'start'))
+  ends <- do.call(cbind, lapply(paths, `[[`, 'end'))
+  dist <- asym_dist(starts, ends)
+  tour <- TSP::solve_TSP(TSP::ATSP(dist))
+  paths[as.integer(tour)]
+}

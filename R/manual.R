@@ -3,8 +3,9 @@
 #' This function sets up a connection to the AxiDraw and returns an object with
 #' methods for directly controlling the movement of the pen plotter.
 #'
-#' @param options A list of options for the AxiDraw. Use [manual_options()] for
-#' help with creating a valid list of options.
+#' @param units The units that movement is given in. Either `'cm'` or `'in'`.
+#' @param options An `axi_options` object. See the documentation for
+#' [axi_options()] for all the settings.
 #'
 #' @note
 #' Before and after use it is necessary to call the `connect()`/`disconnect()`
@@ -30,12 +31,12 @@
 #' @return An object with the methods given in the *Instructions* section.
 #'
 #' @export
-axi_manual <- function(options = list()) {
+axi_manual <- function(units = 'cm', options = axi_options()) {
+  units <- match.arg(tolower(units), c('cm', 'in'))
   axidraw <- import_axidraw()
-  for (opt in names(options)) {
-    axidraw$options[[opt]] <- options[[opt]]
-  }
   axidraw$interactive()
+  axidraw$options$units <- match(units, c('in', 'cm')) - 1L
+  axidraw <- set_options(axidraw, options)
   AxiManual$new(axidraw)
 }
 

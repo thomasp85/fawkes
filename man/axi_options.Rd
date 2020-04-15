@@ -2,19 +2,81 @@
 % Please edit documentation in R/options.R
 \name{axi_options}
 \alias{axi_options}
-\alias{svg_options}
-\alias{manual_options}
 \title{Setting options for AxiDraw}
 \usage{
-svg_options(...)
-
-manual_options(...)
+axi_options(
+  speed_down = 25,
+  speed_up = 75,
+  acceleration = 75,
+  position_down = 40,
+  position_up = 60,
+  rate_lower = 50,
+  rate_raise = 75,
+  delay_down = 0,
+  delay_up = 0,
+  const_speed = FALSE,
+  model = NULL,
+  port = NULL,
+  ignore_port = FALSE
+)
 }
 \arguments{
-\item{...}{A range of options}
+\item{speed_down}{The maximum movement speed while the pen is lowered as a
+percentage of the maximum cariage speed. Values must lie between \code{1} and
+\code{110}. Unless \code{const_speed = TRUE} the carriage uses a smooth accelaration
+meaning that the maximum speed may only be reached during long straight
+draws. There is little gain in plotting time when increasing this value, but
+it may adversely affect quality.}
+
+\item{speed_up}{As \code{speed_down} but for travel when the pen is raised.
+Movement when the pen is raised will always use acceleration and increasing
+this value can have a large effect and plotting time in cases where the pen
+jumps around a lot.}
+
+\item{acceleration}{Gives the acceleration and decelaretion speed as a
+percentage of the maximum rate. Values must lie between \code{1} and \code{100}.
+Changing this value will not affect the maximum speed, but how fast it will
+reach it.}
+
+\item{position_down}{The height of the pen when lowered as a percentage of
+vertical travel. Value must lie between \code{1} and \code{100}.}
+
+\item{position_up}{As \code{position_down} but setting the height of the pen when
+raised.}
+
+\item{rate_lower}{The rate of vertical movement when the pen is lowered given
+as a percentage of maximum vertical travel speed. Value must lie between \code{1}
+and \code{100}.}
+
+\item{rate_raise}{As \code{rate_lower} but for specifying relative speed when
+raising the pen.}
+
+\item{delay_down}{A delay in ms before commencing movement after the pen has
+been lowered. Value must lie between \code{-500} and \code{500}. A delay is
+automatically applied based on the position and rate, but this can be
+modified with this setting.}
+
+\item{delay_up}{As \code{delay_down} but for commencing movement after the pen has
+been raised.}
+
+\item{const_speed}{A boolean given whether the carriage should travel with
+maximum speed while the pen is down, or use the smooth acceleration.}
+
+\item{model}{The AxiDraw model to use. This will affect the travel limits
+imposed on the carriage. Valid values are \code{'A4'}, \code{'A3'}, or \code{'XL'}. If
+\code{NULL} the value will be taken from the \code{'fawkes.model'} option or \code{'A4'} if
+missing.}
+
+\item{port}{The port connection to use. If \code{NULL} it will be resolved
+automatically.}
+
+\item{ignore_port}{If set to \code{TRUE} it will always communicate with the
+first device located even if it is not the one given by \code{port}}
+}
+\value{
+An \code{axi_options} object
 }
 \description{
-These functions help with setting options for the AxiDraw. They output
-regular lists, but will help with input checks and the likes, and allow
-tab-completion of option names.
+This function encapsulates defining general settings for the AxiDraw. Input
+will be checked against valid values.
 }

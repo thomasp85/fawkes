@@ -2,12 +2,38 @@
 % Please edit documentation in R/device.R
 \name{axi_dev}
 \alias{axi_dev}
+\alias{ghost_dev}
 \title{A graphic device that renders using the AxiDraw pen plooter}
 \usage{
-axi_dev(paper_size = "A4", portrait = TRUE, margins = 20,
-  tip_size = 1, color = "black", ignore_color = TRUE,
-  ignore_lwd = FALSE, line_overlap = 0.1, draw_fill = TRUE,
-  optimize_order = "none", options = list())
+axi_dev(
+  paper_size = "A4",
+  portrait = TRUE,
+  margins = 20,
+  tip_size = 1,
+  color = "black",
+  ignore_color = TRUE,
+  ignore_lwd = FALSE,
+  line_overlap = 0.1,
+  draw_fill = TRUE,
+  hatch_angle = 45,
+  optimize_order = "all",
+  options = axi_options()
+)
+
+ghost_dev(
+  paper_size = "A4",
+  portrait = TRUE,
+  margins = 20,
+  tip_size = 1,
+  color = "black",
+  ignore_color = TRUE,
+  ignore_lwd = FALSE,
+  line_overlap = 0.1,
+  draw_fill = TRUE,
+  hatch_angle = 45,
+  optimize_order = "all",
+  options
+)
 }
 \arguments{
 \item{paper_size}{The size of the paper to draw on, either as a numeric
@@ -15,6 +41,12 @@ vector  giving dimensions in mm, or as a standard paper size name.}
 
 \item{portrait}{Logical. Is the paper oriented as portrait
 (i.e. width < height). Will rearrange given paper dimensions to fit.}
+
+\item{margins}{The margins of the paper, in mm. The spec follows that of css,
+meaning that if it is given as a single value it defines all margins, if
+given as two values it defines top/bottom, left/right, if it is given as
+three values it defines top, left/right, bottom, and if it is given as four
+values it defines top, right, bottom, left.}
 
 \item{tip_size}{The size of the tip (i.e. the width of the line it draws) of
 the initial pen}
@@ -33,22 +65,21 @@ cause gaps between the lines.}
 
 \item{draw_fill}{Logical. Should fill be drawn using hatching?}
 
+\item{hatch_angle}{Angle in degrees that the hatching of fill should be drawn
+with.}
+
 \item{optimize_order}{Logical. Should the drawing order be optimised so that
 pen movement is minimised? Will only affect consecutive calls to the same
 drawing primitive.}
 
-\item{options}{A list of options for the AxiDraw. Use \code{\link[=manual_options]{manual_options()}} for
-help with creating a valid list of options.}
-
-\item{margins.}{The margins of the paper, in mm. The spec follows that of css,
-meaning that if it is given as a single value it defines all margins, if
-given as two values it defines top/bottom, left/right, if it is given as
-three values it defines top, left/right, bottom, and if it is given as four
-values it defines top, right, bottom, left.}
+\item{options}{An \code{axi_options} object. See the documentation for
+\code{\link[=axi_options]{axi_options()}} for all the settings.}
 }
 \description{
-This call opens up a graphic device that takes plotting instructions from
-e.g. \code{plot()} or ggplot2, and renders it with the AxiDraw.
+\code{axi_dev()} opens up a graphic device that takes plotting instructions from
+e.g. \code{plot()} or ggplot2, and renders it with the AxiDraw. \code{ghost_dev()}
+behaves like \code{axi_dev()}, but instead of sending instructions to the plotter
+it will collect them and allow you to preview the movement of the pen.
 }
 \details{
 At the moment the device will ignore colour information and will only draw
@@ -56,7 +87,4 @@ the stroke of objects. Further, any linetype information is lost. It will try
 to match the linewidth, but can obviously not draw something thinner than the
 tip of the pen. Clipping is, incredibly, supported, but text is not. Most of
 the restrictions above will be handled with time.
-}
-\note{
-\strong{UNDER CONSTRUCTION}
 }

@@ -4,16 +4,48 @@
 \alias{axi_svg}
 \title{Render an SVG file with the AxiDraw penplotter}
 \usage{
-axi_svg(file, options = list(), capture = FALSE, text)
+axi_svg(
+  file,
+  capture = FALSE,
+  options = axi_options(),
+  layer = NULL,
+  copies = 1L,
+  page_delay = 15,
+  auto_rotate = TRUE,
+  rendering = "all",
+  reorder = "none",
+  summary = FALSE,
+  text
+)
 }
 \arguments{
 \item{file}{An svg file}
 
-\item{options}{A list of options for the AxiDraw. Use \code{\link[=svg_options]{svg_options()}} for
-help with creating a valid list of options.}
-
 \item{capture}{Logical. Should the drawing instructions be captured and
 returned as a new svg.}
+
+\item{options}{An \code{axi_options} object. See the documentation for
+\code{\link[=axi_options]{axi_options()}} for all the settings.}
+
+\item{layer}{The layer to plot when \code{mode = 'layers'}. See the details
+section}
+
+\item{copies}{The number of copies to produce}
+
+\item{page_delay}{The delay in seconds between each copy}
+
+\item{auto_rotate}{Automatically rotate the image to maximize paper usage}
+
+\item{rendering}{The type of preview to generate when \code{preview = TRUE}.
+Either \code{'none'} (nothing rendered), \code{'down'} (render when pen is down),
+\code{'up'} (render when pen is up), or \code{'all'} (render everything)}
+
+\item{reorder}{The type of automatical line reordering to perform. Either
+\code{'none'} (no reordering), \code{'objects'} (reorder within objects), \code{'groups'} (
+reorder within objects, then reorder groups), or \code{'full'} (reorder everything
+together).}
+
+\item{summary}{Should time spend and distance travel be reported in the end}
 
 \item{text}{An svg as a character vector.}
 }

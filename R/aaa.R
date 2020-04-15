@@ -147,3 +147,7 @@ first <- function(x) x[[1]]
   x[[1]] <- value
   x
 }
+
+asym_dist <- function(start, end) {
+  .Call("asym_dist_c", as.numeric(start), as.numeric(end), PACKAGE = 'fawkes')
+}
