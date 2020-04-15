@@ -16,6 +16,8 @@ Encoding: UTF-8
 LazyData: true
 URL: https://fawkes.data-imaginist.com, https://github.com/thomasp85/fawkes
 BugReports: https://github.com/thomasp85/fawkes/issues
+Depends:
+    devout
 Imports: 
     reticulate,
     fs,
@@ -24,7 +26,6 @@ Imports:
     R6,
     polyclip,
     cli,
-    devout,
     TSP
 Remotes: 
     coolbutuseless/devout
