@@ -61,7 +61,9 @@ capabilities of the pyaxidraw library so rendering an svg with
 a different result than rendering directly to \code{\link[=axi_dev]{axi_dev()}}.
 }
 \examples{
+\dontrun{
 logo <- system.file('example.svg', package = 'fawkes')
-logo_penned <- axi_svg(logo, capture = TRUE)
+axi_svg(logo)
+}
 
 }

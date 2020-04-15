@@ -32,8 +32,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' logo <- system.file('example.svg', package = 'fawkes')
-#' logo_penned <- axi_svg(logo, capture = TRUE)
+#' axi_svg(logo)
+#' }
 #'
 axi_svg <- function(file, capture = FALSE, options = axi_options(),
                     layer = NULL, copies = 1L, page_delay = 15,
