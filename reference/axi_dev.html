@@ -239,7 +239,10 @@ the restrictions above will be handled with time.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>gd</span> <span class='kw'>&lt;-</span> <span class='fu'>ghost_dev</span>(<span class='st'>'A6'</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>cars</span>)</div><div class='output co'>#&gt; <span class='error'>Error in plot.new(): figure margins too large</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='no'>cars</span>))</div><div class='output co'>#&gt; <span class='error'>Error in plot.xy(xy.coords(x, y), type = type, ...): plot.new has not been called yet</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>cars</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='no'>cars</span>))
+<span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
 
 <span class='no'>gd</span>$<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='kw'>plot_air</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='axi_dev-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
