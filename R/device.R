@@ -71,7 +71,7 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
     line_overlap = line_overlap, draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
-    first_page = TRUE
+    first_page = TRUE, delta = c(0, 0)
   ), parent = emptyenv())
   rdevice("axidraw_callback", info = info)
 }
@@ -483,22 +483,33 @@ update_pen <- function(state, color) {
       }
       if (tip_size != '') state$rdata$info$tip_size <- as.numeric(tip_size)
     }
+    cli::cli_alert_info("Enter tip offset relative to the first pen in mm (space separated) or leave blank if no offset")
+    delta <- readline()
+    if (delta != '') {
+      while (anyNA(as.numeric(strsplit(delta, '\\s+')[[1]])[1:2])) {
+        cli::cli_alert_warning('Invalid tip offset `{delta}`. Enter a valid one:')
+        tip_size <- readline()
+        if (tip_size == '') break
+      }
+      if (delta != '') state$rdata$info$delta <- as.numeric(strsplit(delta, '\\s+')[[1]])[1:2]
+    }
     state$rdata$info$color <- color
   }
   state
 }
 draw_lines <- function(paths, state) {
   ad <- state$rdata$info$ad
+  delta <- state$rdata$info$delta
   is_ghost <- inherits(ad, 'AxiGhost')
   for (path in paths) {
     if (length(path) == 0 || length(path$x) == 0) next
     path <- prepare_path(path, state)
-    ad$move_to(first(path$x), first(path$y))
+    ad$move_to(first(path$x) + delta[1], first(path$y) + delta[2])
     if (is_ghost) {
       ad$line_to(path$x[-1], path$y[-1])
     } else {
       for (i in seq_along(path$x)[-1]) {
-        ad$line_to(path$x[i], path$y[i])
+        ad$line_to(path$x[i] + delta[1], path$y[i] + delta[2])
       }
     }
   }
