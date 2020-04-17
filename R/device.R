@@ -504,12 +504,12 @@ draw_lines <- function(paths, state) {
   for (path in paths) {
     if (length(path) == 0 || length(path$x) == 0) next
     path <- prepare_path(path, state)
-    ad$move_to(first(path$x) + delta[1], first(path$y) + delta[2])
+    ad$move_to(first(path$x) - delta[1], first(path$y) - delta[2])
     if (is_ghost) {
       ad$line_to(path$x[-1], path$y[-1])
     } else {
       for (i in seq_along(path$x)[-1]) {
-        ad$line_to(path$x[i] + delta[1], path$y[i] + delta[2])
+        ad$line_to(path$x[i] - delta[1], path$y[i] - delta[2])
       }
     }
   }
