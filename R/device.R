@@ -298,43 +298,41 @@ update_stroke <- function(state, primitive) {
 }
 create_closed_stroke <- function(shapes, state) {
   stroke <- state$gc$lwd * 72 / 96
-  n_strokes <- ceiling(stroke / (state$rdata$info$tip_size - state$rdata$info$line_overlap))
-  if (state$rdata$info$ignore_lwd || stroke <= state$rdata$info$tip_size) {
+  n_strokes <- ceiling(stroke / (state$rdata$tip_size - state$rdata$line_overlap))
+  if (state$rdata$ignore_lwd || stroke <= state$rdata$tip_size) {
     clip_closed_stroke(shapes, state)
   } else {
     all_strokes <- lapply(shapes, function(path) {
       full_stroke <- polyclip::polylineoffset(
         path,
-        (stroke - state$rdata$info$tip_size) / 2,
+        (stroke - state$rdata$tip_size) / 2,
         jointype = joins[state$gc$ljoin],
         endtype = 'closedline',
         miterlim = state$gc$lmitre
       )
       full_stroke <- polyclip::polyclip(full_stroke, clip_box(state), 'intersection')
-      full_stroke <- lapply(full_stroke, fill_stroke, state$rdata$info$tip_size - state$rdata$info$line_overlap, n_strokes)
-      unlist(full_stroke, recursive = FALSE, use.names = FALSE)
+      fill_stroke(full_stroke, state$rdata$tip_size - state$rdata$line_overlap, n_strokes)
     })
     unlist(all_strokes, recursive = FALSE, use.names = FALSE)
   }
 }
 create_open_stroke <- function(paths, state) {
   stroke <- state$gc$lwd * 72 / 96
-  n_strokes <- ceiling(stroke / (state$rdata$info$tip_size - state$rdata$info$line_overlap))
-  if (state$rdata$info$ignore_lwd || stroke <= state$rdata$info$tip_size) {
+  n_strokes <- ceiling(stroke / (state$rdata$tip_size - state$rdata$line_overlap))
+  if (state$rdata$ignore_lwd || stroke <= state$rdata$tip_size) {
     paths <- lapply(paths, polyclip::polyclip, clip_box(state), 'intersection', closed = FALSE)
     unlist(paths, recursive = FALSE, use.names = FALSE)
   } else {
     all_paths <- lapply(paths, function(path) {
       full_path <- polyclip::polylineoffset(
         path,
-        (stroke - state$rdata$info$tip_size) / 2,
+        (stroke - state$rdata$tip_size) / 2,
         jointype = joins[state$gc$ljoin],
         endtype = ends[state$gc$lend],
         miterlim = state$gc$lmitre
       )
       full_path <- polyclip::polyclip(full_path, clip_box(state), 'intersection')
-      full_path <- lapply(full_path, fill_stroke, state$rdata$info$tip_size - state$rdata$info$line_overlap, n_strokes)
-      unlist(full_path, recursive = FALSE, use.names = FALSE)
+      fill_stroke(full_path, state$rdata$tip_size - state$rdata$line_overlap, n_strokes)
     })
     unlist(all_paths, recursive = FALSE, use.names = FALSE)
   }
@@ -373,14 +371,19 @@ fill_stroke <- function(outline, stroke_width, n_strokes) {
   if (n_strokes %% 2 != 0) {
     last(dilations) <- last(dilations) - stroke_width * 0.5
   }
-  c(
-    list(outline),
+  strokes <- c(
+    outline,
     unlist(
       lapply(-dilations, polyclip::polyoffset, A = outline, miterlim = 10000, jointype = 'miter'),
       recursive = FALSE,
       use.names = FALSE
     )
   )
+  lapply(strokes, function(stroke) {
+    stroke$x <- c(stroke$x, first(stroke$x))
+    stroke$y <- c(stroke$y, first(stroke$y))
+    stroke
+  })
 }
 fill_shape <- function(shape, tip_width, overlap, angle = 45) {
   shape <- polyclip::polyoffset(shape, -tip_width / 2)
