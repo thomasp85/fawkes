@@ -65,15 +65,14 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
   axidraw <- axi_manual(units = 'cm', options)
-  info <- list2env(list(
+  rdevice(axidraw_callback,
     ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
     p_width = paper_size[1], tip_size = tip_size, color = color,
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
     line_overlap = line_overlap, draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
     first_page = TRUE, delta = c(0, 0)
-  ), parent = emptyenv())
-  rdevice("axidraw_callback", info = info)
+  )
 }
 #' @rdname axi_dev
 #' @export
@@ -90,15 +89,14 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
   }
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
-  info <- list2env(list(
+  rdevice(axidraw_callback,
     ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
     p_width = paper_size[1], tip_size = tip_size, color = color,
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
     line_overlap = line_overlap, draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
-    first_page = TRUE
-  ), parent = emptyenv())
-  rdevice("axidraw_callback", info = info)
+    first_page = TRUE, delta = c(0, 0)
+  )
   invisible(axidraw)
 }
 #' Callbacks for the fawkes devices
@@ -109,6 +107,7 @@ axidraw_callback <- function(device_call, args, state) {
   state <- switch(device_call,
     open = .axi_open(args, state),
     close = .axi_close(args, state),
+    onExit = .axi_abort(args, state),
     clip = .axi_clip(args, state),
     newPage = .axi_new_page(args, state),
     circle = .axi_circle(args, state),
@@ -122,20 +121,20 @@ axidraw_callback <- function(device_call, args, state) {
 }
 
 .axi_open <- function(args, state) {
-  state$dd$right <- state$rdata$info$size[1]
-  state$dd$bottom <- state$rdata$info$size[2]
-  state$dd$clipRight <- state$rdata$info$size[1]
-  state$dd$clipBottom <- state$rdata$info$size[2]
+  state$dd$right <- state$rdata$size[1]
+  state$dd$bottom <- state$rdata$size[2]
+  state$dd$clipRight <- state$rdata$size[1]
+  state$dd$clipBottom <- state$rdata$size[2]
   state$dd$ipr <- c(0.03937, 0.03937)
-  state$rdata$info$last_primitive <- NA
-  state$rdata$info$calls <- list()
-  state$rdata$info$ad$connect()
+  state$rdata$last_primitive <- NA
+  state$rdata$calls <- list()
+  state$rdata$ad$connect()
   state
 }
 .axi_close <- function(args, state) {
   draw_collection(state, NA)
-  state$rdata$info$ad$move_to(0, 0)
-  state$rdata$info$ad$disconnect()
+  state$rdata$ad$move_to(0, 0)
+  state$rdata$ad$disconnect()
   state
 }
 .axi_clip <- function(args, state) {
@@ -146,17 +145,21 @@ axidraw_callback <- function(device_call, args, state) {
   state
 }
 .axi_new_page <- function(args, state) {
-  state$rdata$info$ad$move_to(0, 0)
-  if (!state$rdata$info$first_page) {
+  state$rdata$ad$move_to(0, 0)
+  if (!state$rdata$first_page) {
     cli::cli_alert_warning("Change paper (press enter when ready for next page)")
     readline()
   }
-  state$rdata$info$first_page <- FALSE
+  state$rdata$first_page <- FALSE
+  state
+}
+.axi_abort <- function(args, state) {
+  state$rdata$ad$move_to(0, 0)
   state
 }
 .axi_circle <- function(args, state) {
   n_points <-  round((2 * pi) / acos((args$r - 0.5) / args$r)) * 10;
-  angles <- seq(0, 2*pi, length.out = n_points + 1)[-(n_points + 1)]
+  angles <- seq(0, 2*pi, length.out = n_points)
   shape <- list(
     x = cos(angles) * args$r + args$x,
     y = sin(angles) * args$r + args$y
@@ -277,7 +280,7 @@ has_stroke <- function(state) {
   state$gc$lwd != 0 && state$gc$col[4] != 0 # && state$gc$lty != 0
 }
 has_fill <- function(state) {
-  state$rdata$info$draw_fill && state$gc$fill[4] != 0
+  state$rdata$draw_fill && state$gc$fill[4] != 0
 }
 update_fill <- function(state, primitive) {
   if (!can_collect(state, primitive, 1L, list())) {
@@ -338,10 +341,10 @@ create_open_stroke <- function(paths, state) {
 }
 create_fill <- function(fill, state) {
   fill <- polyclip::polyclip(fill, clip_box(state), 'intersection')
-  fill <- fill_shape(fill, state$rdata$info$tip_size, state$rdata$info$line_overlap, state$rdata$info$hatch_angle)
+  fill <- fill_shape(fill, state$rdata$tip_size, state$rdata$line_overlap, state$rdata$hatch_angle)
 }
 create_circle_fill <- function(x, y, r, angles, state) {
-  radii <- seq(r - state$rdata$info$tip_size / 2, 0, by = -(state$rdata$info$tip_size - state$rdata$info$line_overlap))
+  radii <- seq(r - state$rdata$tip_size / 2, 0, by = -(state$rdata$tip_size - state$rdata$line_overlap))
   radii <- unique(c(radii, 0))
   angles <- c(angles, angles[1])
   cos_a <- cos(angles)
@@ -429,14 +432,14 @@ clip_closed_stroke <- function(shape, state) {
 }
 
 can_collect <- function(state, primitive, fill, stroke) {
-  if (state$rdata$info$optimize_order == 'none') return(FALSE)
-  if (state$rdata$info$optimize_order == 'primitive' &&
-      primitive != state$rdata$info$current_primitive) return(FALSE)
-  if (!state$rdata$info$ignore_color &&
-      !identical(state$gc$col[1:3], state$rdata$info$color[1:3]) &&
+  if (state$rdata$optimize_order == 'none') return(FALSE)
+  if (state$rdata$optimize_order == 'primitive' &&
+      primitive != state$rdata$current_primitive) return(FALSE)
+  if (!state$rdata$ignore_color &&
+      !identical(state$gc$col[1:3], state$rdata$color[1:3]) &&
       length(stroke) > 0) return(FALSE)
-  if (!state$rdata$info$ignore_color &&
-      !identical(state$gc$fill[1:3], state$rdata$info$color[1:3]) &&
+  if (!state$rdata$ignore_color &&
+      !identical(state$gc$fill[1:3], state$rdata$color[1:3]) &&
       length(fill) > 0) return(FALSE)
   TRUE
 }
@@ -444,7 +447,7 @@ collect_lines <- function(lines, state) {
   if (length(lines) == 0) return(state)
   start <- c(first(first(lines)$x), first(first(lines)$y))
   end <- c(last(last(lines)$x), last(last(lines)$y))
-  state$rdata$info$collection[[length(state$rdata$info$collection) + 1]] <- list(
+  state$rdata$collection[[length(state$rdata$collection) + 1]] <- list(
     start = start,
     end = end,
     lines = lines
@@ -453,27 +456,27 @@ collect_lines <- function(lines, state) {
   state
 }
 draw_collection <- function(state, new_primitive) {
-  collection <- state$rdata$info$collection
+  collection <- state$rdata$collection
   if (length(collection) != 0) {
-    if (state$rdata$info$optimize_order != 'none') {
+    if (state$rdata$optimize_order != 'none') {
       collection <- optimize_order(collection)
     }
     lapply(collection, function(shape) {
       draw_lines(shape$lines, state)
     })
-    state$rdata$info$collection <- list()
+    state$rdata$collection <- list()
   }
-  state$rdata$info$current_primitive <- new_primitive
+  state$rdata$current_primitive <- new_primitive
   state
 }
 update_pen <- function(state, color) {
-  if (!state$rdata$info$ignore_color && any(state$rdata$info$color[1:3] != color[1:3])) {
-    state$rdata$info$ad$move_to(0, 0)
+  if (!state$rdata$ignore_color && any(state$rdata$color[1:3] != color[1:3])) {
+    state$rdata$ad$move_to(0, 0)
     col <- rgb(color[1], color[2], color[3], maxColorValue = 255)
     col_fmt <- cli::make_ansi_style(col, bg = TRUE)
     cli::cli_alert_warning("Please change pen color")
     cli::cli_alert_info("New color: {col_fmt('  ')} ({col})")
-    cli::cli_alert_info("Enter new tip size (in mm) or leave blank to keep current {state$rdata$info$tip_size}mm")
+    cli::cli_alert_info("Enter new tip size (in mm) or leave blank to keep current {state$rdata$tip_size}mm")
     tip_size <- readline()
     if (tip_size != '') {
       while (is.na(as.numeric(tip_size))) {
@@ -481,7 +484,7 @@ update_pen <- function(state, color) {
         tip_size <- readline()
         if (tip_size == '') break
       }
-      if (tip_size != '') state$rdata$info$tip_size <- as.numeric(tip_size)
+      if (tip_size != '') state$rdata$tip_size <- as.numeric(tip_size)
     }
     cli::cli_alert_info("Enter tip offset relative to the first pen in mm (space separated) or leave blank if no offset")
     delta <- readline()
@@ -491,9 +494,9 @@ update_pen <- function(state, color) {
         tip_size <- readline()
         if (tip_size == '') break
       }
-      if (delta != '') state$rdata$info$delta <- as.numeric(strsplit(delta, '\\s+')[[1]])[1:2]
+      if (delta != '') state$rdata$delta <- as.numeric(strsplit(delta, '\\s+')[[1]])[1:2]
     }
-    state$rdata$info$color <- color
+    state$rdata$color <- color
   }
   state
 }
@@ -516,16 +519,17 @@ draw_lines <- function(paths, state) {
   ad$pen_up()
 }
 prepare_path <- function(path, state) {
-  path$x <- path$x + state$rdata$info$offset[1]
-  path$y <- path$y + state$rdata$info$offset[2]
-  if (state$rdata$info$flip) {
-    path$x <- -1 * (path$x - state$rdata$info$p_width)
+  path$x <- path$x + state$rdata$offset[1]
+  path$y <- path$y + state$rdata$offset[2]
+  if (state$rdata$flip) {
+    path$x <- -1 * (path$x - state$rdata$p_width)
     path[c('x', 'y')] <- path[c('y', 'x')]
   }
   path$x <- path$x / 10
   path$y <- path$y / 10
   path
 }
+
 joins <- c('round', 'mitre', 'bevel')
 ends <- c('openround', 'openbutt', 'opensquare')
 
