@@ -31,6 +31,6 @@ SEXP asym_dist(SEXP start, SEXP end) {
       dist_p[ind] = sqrt(dist_x * dist_x + dist_y * dist_y);
     }
   }
-
+  UNPROTECT(1);
   return dist;
 }
