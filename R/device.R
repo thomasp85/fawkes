@@ -501,18 +501,17 @@ update_pen <- function(state, color) {
   state
 }
 draw_lines <- function(paths, state) {
-  ad <- state$rdata$info$ad
-  delta <- state$rdata$info$delta
+  ad <- state$rdata$ad
   is_ghost <- inherits(ad, 'AxiGhost')
   for (path in paths) {
     if (length(path) == 0 || length(path$x) == 0) next
     path <- prepare_path(path, state)
-    ad$move_to(first(path$x) - delta[1], first(path$y) - delta[2])
+    ad$move_to(first(path$x), first(path$y))
     if (is_ghost) {
       ad$line_to(path$x[-1], path$y[-1])
     } else {
       for (i in seq_along(path$x)[-1]) {
-        ad$line_to(path$x[i] - delta[1], path$y[i] - delta[2])
+        ad$line_to(path$x[i], path$y[i])
       }
     }
   }
@@ -525,6 +524,9 @@ prepare_path <- function(path, state) {
     path$x <- -1 * (path$x - state$rdata$p_width)
     path[c('x', 'y')] <- path[c('y', 'x')]
   }
+
+  path$x <- path$x  - state$rdata$delta[1]
+  path$y <- path$y  - state$rdata$delta[2]
   path$x <- path$x / 10
   path$y <- path$y / 10
   path
