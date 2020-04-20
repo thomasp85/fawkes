@@ -65,7 +65,7 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
   axidraw <- axi_manual(units = 'cm', options)
-  rdevice(axidraw_callback,
+  rdevice(axidraw_callback, device_name = 'axi_device',
     ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
     p_width = paper_size[1], tip_size = tip_size, color = color,
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
@@ -89,7 +89,7 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
   }
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
-  rdevice(axidraw_callback,
+  rdevice(axidraw_callback, device_name = 'ghost_device',
     ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
     p_width = paper_size[1], tip_size = tip_size, color = color,
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
@@ -263,7 +263,7 @@ axidraw_callback <- function(device_call, args, state) {
   if (has_fill(state)) {
     state <- update_fill(state, 'path')
     fill <- create_fill(path, state)
-    state <- collect_lines(fill, state)
+    state <- collect_lines(fill, state, as_one = FALSE)
   }
 
   # Stroke
@@ -339,7 +339,7 @@ create_open_stroke <- function(paths, state) {
 }
 create_fill <- function(fill, state) {
   fill <- polyclip::polyclip(fill, clip_box(state), 'intersection')
-  fill <- fill_shape(fill, state$rdata$tip_size, state$rdata$line_overlap, state$rdata$hatch_angle)
+  fill_shape(fill, state$rdata$tip_size, state$rdata$line_overlap, state$rdata$hatch_angle)
 }
 create_circle_fill <- function(x, y, r, angles, state) {
   radii <- seq(r - state$rdata$tip_size / 2, 0, by = -(state$rdata$tip_size - state$rdata$line_overlap))
@@ -446,16 +446,21 @@ can_collect <- function(state, primitive, fill, stroke) {
       length(fill) > 0) return(FALSE)
   TRUE
 }
-collect_lines <- function(lines, state) {
-  if (length(lines) == 0) return(state)
-  start <- c(first(first(lines)$x), first(first(lines)$y))
-  end <- c(last(last(lines)$x), last(last(lines)$y))
-  state$rdata$collection[[length(state$rdata$collection) + 1]] <- list(
-    start = start,
-    end = end,
-    lines = lines
-  )
-
+collect_lines <- function(lines, state, as_one = TRUE) {
+  if (!as_one) {
+    state <- Reduce(function(l, r) {
+      collect_lines(list(r), l, TRUE)
+    }, lines, state)
+  } else {
+    if (length(lines) == 0) return(state)
+    start <- c(first(first(lines)$x), first(first(lines)$y))
+    end <- c(last(last(lines)$x), last(last(lines)$y))
+    state$rdata$collection[[length(state$rdata$collection) + 1]] <- list(
+      start = start,
+      end = end,
+      lines = lines
+    )
+  }
   state
 }
 draw_collection <- function(state, new_primitive) {
