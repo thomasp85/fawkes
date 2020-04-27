@@ -495,6 +495,7 @@ update_pen <- function(state, color) {
       if (tip_size != '') state$rdata$tip_size <- as.numeric(tip_size)
     }
     cli::cli_alert_info("Enter tip offset relative to the first pen in mm (space separated) or leave blank if no offset")
+    state$rdata$delta <- c(0, 0)
     delta <- readline()
     if (delta != '') {
       while (anyNA(as.numeric(strsplit(delta, '\\s+')[[1]])[1:2])) {
