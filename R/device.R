@@ -348,17 +348,38 @@ create_circle_fill <- function(x, y, r, angles, state) {
   cos_a <- cos(angles)
   sin_a <- sin(angles)
   bbox <- clip_box(state)
-  unlist(lapply(radii, function(r) {
+  border <- polyclip::polyclip(
+    list(x = cos_a * radii[1] + x, y = sin_a * radii[1] + y),
+    bbox,
+    'intersection'
+  )
+  fill <- lapply(radii[-1], function(r) {
     if (r == 0) {
       cos_a <- c(0, 0)
       sin_a <- c(0, 0)
     }
-    polyclip::polyclip(
+    x <- polyclip::polyclip(
       list(x = cos_a * r + x, y = sin_a * r + y),
       bbox,
-      'intersection'
+      'intersection',
+      closed = FALSE
     )
-  }), recursive = FALSE)
+    if (length(x) > 1) {
+      if (first(x[[1]]$x) == last(x[[2]]$x)) {
+        x <- list(list(
+          x = c(x[[2]]$x, x[[1]]$x),
+          y = c(x[[2]]$y, x[[1]]$y)
+        ))
+      } else {
+        x <- list(list(
+          x = c(x[[1]]$x, x[[2]]$x),
+          y = c(x[[1]]$y, x[[2]]$y)
+        ))
+      }
+    }
+    x
+  })
+  unlist(c(fill, list(border)), recursive = FALSE)
 }
 clip_box <- function(state) {
   list(
