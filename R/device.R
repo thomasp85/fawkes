@@ -540,7 +540,7 @@ prepare_path <- function(path, state) {
   path
 }
 
-joins <- c('round', 'mitre', 'bevel')
+joins <- c('round', 'miter', 'bevel')
 ends <- c('openround', 'openbutt', 'opensquare')
 
 optimize_order <- function(paths) {
