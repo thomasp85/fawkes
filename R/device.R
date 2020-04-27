@@ -391,8 +391,8 @@ fill_shape <- function(shape, tip_width, overlap, angle = 45) {
   bbox_y <- range(unlist(lapply(shape, `[[`, 'y')))
   max_length <- max(diff(bbox_x), diff(bbox_y))
   x <- rep(seq(-max_length, max_length, by = tip_width - overlap), each = 2)
-  y <- rep(c(-max_length, max_length), length.out = length(x))
-  y <- c(y[-1], y[1])
+  y <- rep(c(-max_length, max_length), each = 2, length.out = length(x) - 1)
+  y <- c(max_length, y)
   theta <- 2 * pi * angle / 360
   cos_t <- cos(theta)
   sin_t <- sin(theta)
