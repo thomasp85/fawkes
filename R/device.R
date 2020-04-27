@@ -362,8 +362,8 @@ create_circle_fill <- function(x, y, r, angles, state) {
 }
 clip_box <- function(state) {
   list(
-    x = c(state$dd$clipLeft - 1e5, state$dd$clipRight + 1e-5)[c(1, 2, 2, 1)],
-    y = c(state$dd$clipTop + 1e5, state$dd$clipBottom - 1e-5)[c(1, 1, 2, 2)]
+    x = c(state$dd$clipLeft - 1e-5, state$dd$clipRight + 1e-5)[c(1, 2, 2, 1)],
+    y = c(state$dd$clipTop + 1e-5, state$dd$clipBottom - 1e-5)[c(1, 1, 2, 2)]
   )
 }
 fill_stroke <- function(outline, stroke_width, n_strokes) {
