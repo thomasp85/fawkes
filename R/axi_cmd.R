@@ -53,6 +53,22 @@ axi_align <- function(options = axi_options()) {
   ad <- set_options(ad, options)
   ad$plot_run(FALSE)
 }
+#' @rdname axi_exec
+#'
+#' @inheritParams axi_dev
+#' @importFrom grid grid.newpage grid.circle grid.segments unit gpar
+#' @importFrom grDevices dev.off
+#' @export
+axi_pen_test <- function(tip_size, line_overlap, options = axi_options()) {
+  axi_dev(portrait = FALSE, margins = 0, tip_size = tip_size, line_overlap = line_overlap,
+          options = options)
+  grid.newpage()
+  grid.circle(0, 1, unit(2, 'cm') * tip_size, gp = gpar(fill = 'black', col = NA))
+  grid.segments(unit(1, 'cm') * tip_size, unit(1, 'npc') - unit(4, 'cm') * tip_size,
+                unit(4, 'cm') * tip_size, unit(1, 'npc') - unit(1, 'cm') * tip_size,
+                gp = gpar(lwd = 20 * tip_size))
+  dev.off()
+}
 
 empty_axi <- function() {
   axidraw <- import_axidraw()

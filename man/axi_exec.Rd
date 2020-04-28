@@ -6,6 +6,7 @@
 \alias{axi_sysinfo}
 \alias{axi_toggle_pen}
 \alias{axi_align}
+\alias{axi_pen_test}
 \title{Execute direct commands to the AxiDraw plotter}
 \usage{
 axi_version(options = axi_options())
@@ -15,11 +16,20 @@ axi_sysinfo(options = axi_options())
 axi_toggle_pen(options = axi_options())
 
 axi_align(options = axi_options())
+
+axi_pen_test(tip_size, line_overlap, options = axi_options())
 }
 \arguments{
 \item{options}{An \code{axi_options} object. See the documentation for
 \code{\link[=axi_options]{axi_options()}} for all the settings. Many are not relevant for these
 function.}
+
+\item{tip_size}{The size of the tip (i.e. the width of the line it draws) of
+the initial pen}
+
+\item{line_overlap}{The overlap between adjacent pen strokes when filling out
+shapes and drawing thick lines, in mm. Setting this to a negative amount will
+cause gaps between the lines.}
 }
 \description{
 These small utility functions are not concerned with plotting, but rather

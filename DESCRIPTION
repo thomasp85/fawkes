@@ -25,7 +25,8 @@ Imports:
     polyclip,
     cli,
     TSP,
-    devout (>= 0.2.7)
+    devout (>= 0.2.7),
+    grid
 Remotes: 
     coolbutuseless/devout
 RoxygenNote: 7.1.0
