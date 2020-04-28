@@ -297,7 +297,7 @@ update_stroke <- function(state, primitive) {
   state
 }
 create_closed_stroke <- function(shapes, state) {
-  stroke <- state$gc$lwd * 72 / 96
+  stroke <- state$gc$lwd * 25.4 / 96
   n_strokes <- ceiling(stroke / (state$rdata$tip_size - state$rdata$line_overlap))
   if (state$rdata$ignore_lwd || stroke <= state$rdata$tip_size) {
     clip_closed_stroke(shapes, state)
@@ -317,7 +317,7 @@ create_closed_stroke <- function(shapes, state) {
   }
 }
 create_open_stroke <- function(paths, state) {
-  stroke <- state$gc$lwd * 72 / 96
+  stroke <- state$gc$lwd * 25.4 / 96
   n_strokes <- ceiling(stroke / (state$rdata$tip_size - state$rdata$line_overlap))
   if (state$rdata$ignore_lwd || stroke <= state$rdata$tip_size) {
     paths <- lapply(paths, polyclip::polyclip, clip_box(state), 'intersection', closed = FALSE)
