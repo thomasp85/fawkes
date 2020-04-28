@@ -18,7 +18,7 @@ An object with the methods given in the \emph{Instructions} section.
 }
 \description{
 This function creates a mock of the manual axidraw connection with the same
-methods. The mock will collect all the instructions and provides a \code{plot()}
+methods. The mock will collect all the instructions and provides a \code{preview()}
 method for inspecting the look of the output. As such it can be used to debug
 or test code without being connected to an AxiDraw.
 }

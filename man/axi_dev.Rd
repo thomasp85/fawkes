@@ -95,6 +95,6 @@ plot(cars)
 lines(lowess(cars))
 invisible(dev.off())
 
-gd$plot(plot_air = TRUE)
+gd$preview(plot_air = TRUE)
 
 }

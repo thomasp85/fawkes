@@ -48,7 +48,6 @@ collects the instructions and lets you preview them.
 
 ``` r
 library(fawkes)
-#> Loading required package: devout
 library(ggplot2)
 
 p <- ggplot(mtcars) + 
@@ -64,7 +63,7 @@ gd <- ghost_dev('A6', portrait = FALSE, margins = 5, ignore_color = TRUE)
 p
 invisible(dev.off())
 
-gd$plot()
+gd$preview()
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
@@ -72,7 +71,7 @@ gd$plot()
 It is also possible to see the movement when the pen is raised
 
 ``` r
-gd$plot(plot_air = TRUE)
+gd$preview(plot_air = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
@@ -86,7 +85,7 @@ gd <- ghost_dev('A6', portrait = FALSE, margins = 5, ignore_color = TRUE,
 p
 invisible(dev.off())
 
-gd$plot(plot_air = TRUE)
+gd$preview(plot_air = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />

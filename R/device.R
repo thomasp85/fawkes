@@ -50,7 +50,7 @@
 #' lines(lowess(cars))
 #' invisible(dev.off())
 #'
-#' gd$plot(plot_air = TRUE)
+#' gd$preview(plot_air = TRUE)
 #'
 axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
                     color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,

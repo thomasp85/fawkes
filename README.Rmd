@@ -66,13 +66,13 @@ gd <- ghost_dev('A6', portrait = FALSE, margins = 5, ignore_color = TRUE)
 p
 invisible(dev.off())
 
-gd$plot()
+gd$preview()
 ```
 
 It is also possible to see the movement when the pen is raised
 
 ```{r}
-gd$plot(plot_air = TRUE)
+gd$preview(plot_air = TRUE)
 ```
 
 This makes it easy to quickly assess the efficacy of the automatic path 
@@ -84,7 +84,7 @@ gd <- ghost_dev('A6', portrait = FALSE, margins = 5, ignore_color = TRUE,
 p
 invisible(dev.off())
 
-gd$plot(plot_air = TRUE)
+gd$preview(plot_air = TRUE)
 ```
 
 ## Limitations

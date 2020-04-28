@@ -1,7 +1,7 @@
 #' A mock of a manual axidraw connection
 #'
 #' This function creates a mock of the manual axidraw connection with the same
-#' methods. The mock will collect all the instructions and provides a `plot()`
+#' methods. The mock will collect all the instructions and provides a `preview()`
 #' method for inspecting the look of the output. As such it can be used to debug
 #' or test code without being connected to an AxiDraw.
 #'
@@ -99,7 +99,7 @@ AxiGhost <- R6::R6Class('AxiGhost',
       }
       invisible(self)
     },
-    plot = function(pen_colour = 'black', plot_air = FALSE, air_colour = 'red', size = 1, paper_colour = 'white', background = 'grey') {
+    preview = function(pen_colour = 'black', plot_air = FALSE, air_colour = 'red', size = 1, paper_colour = 'white', background = 'grey') {
       path <- self$get_path()
       ids <- rle(path$raised)
       path$id <- rep(seq_along(ids$lengths), ids$lengths)
@@ -175,3 +175,8 @@ AxiGhost <- R6::R6Class('AxiGhost',
     }
   )
 )
+
+#' @export
+plot.AxiGhost <- function(x, y, ...) {
+  x$preview(...)
+}
