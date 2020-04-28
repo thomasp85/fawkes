@@ -135,7 +135,9 @@ for setup.</p>
 
 <span class='fu'>axi_toggle_pen</span>(<span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='axi_options.html'>axi_options</a></span>())
 
-<span class='fu'>axi_align</span>(<span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='axi_options.html'>axi_options</a></span>())</pre>
+<span class='fu'>axi_align</span>(<span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='axi_options.html'>axi_options</a></span>())
+
+<span class='fu'>axi_pen_test</span>(<span class='no'>tip_size</span>, <span class='no'>line_overlap</span>, <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='axi_options.html'>axi_options</a></span>())</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,6 +147,17 @@ for setup.</p>
       <td><p>An <code>axi_options</code> object. See the documentation for
 <code><a href='axi_options.html'>axi_options()</a></code> for all the settings. Many are not relevant for these
 function.</p></td>
+    </tr>
+    <tr>
+      <th>tip_size</th>
+      <td><p>The size of the tip (i.e. the width of the line it draws) of
+the initial pen</p></td>
+    </tr>
+    <tr>
+      <th>line_overlap</th>
+      <td><p>The overlap between adjacent pen strokes when filling out
+shapes and drawing thick lines, in mm. Setting this to a negative amount will
+cause gaps between the lines.</p></td>
     </tr>
     </table>
 

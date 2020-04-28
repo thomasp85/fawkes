@@ -95,7 +95,6 @@
 <a href="#examples" class="anchor"></a>Examples</h2>
 <p>It is difficult to showcase the use of a piece of software meant to communicate with a pen plotter virtually. <code><a href="reference/axi_svg.html">axi_svg()</a></code> provides access to the svg plotting capabilities build into the python API, and <code><a href="reference/axi_manual.html">axi_manual()</a></code> wraps the interactive mode. More interesting from R is the <code><a href="reference/axi_dev.html">axi_dev()</a></code> that opens up a graphic device that sends instructions to the plotter. The device comes with a lot of batteries included and will e.g. ensure stroking of the requested width by drawing multiple offsetted lines, draw fill with hatching, ask for pen change when the colour changes, and optimise the travel path to improve plotting speed. All of this is impossible to show directly, but fawkes also provides <code><a href="reference/axi_dev.html">ghost_dev()</a></code> that uses the exact same routines as <code><a href="reference/axi_dev.html">axi_dev()</a></code> but collects the instructions and lets you preview them.</p>
 <div class="sourceCode" id="cb2"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">fawkes</span>)
-<span class="co">#&gt; Loading required package: devout</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
 
 <span class="no">p</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">mtcars</span>) +
@@ -111,10 +110,10 @@
 <span class="no">p</span>
 <span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span>())
 
-<span class="no">gd</span>$<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>()</pre></div>
+<span class="no">gd</span>$<span class="fu">preview</span>()</pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 <p>It is also possible to see the movement when the pen is raised</p>
-<div class="sourceCode" id="cb3"><pre class="r"><span class="no">gd</span>$<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">plot_air</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
+<div class="sourceCode" id="cb3"><pre class="r"><span class="no">gd</span>$<span class="fu">preview</span>(<span class="kw">plot_air</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
 <p>This makes it easy to quickly assess the efficacy of the automatic path optimisation:</p>
 <div class="sourceCode" id="cb4"><pre class="r"><span class="no">gd</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/axi_dev.html">ghost_dev</a></span>(<span class="st">'A6'</span>, <span class="kw">portrait</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">margins</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">ignore_color</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
@@ -122,7 +121,7 @@
 <span class="no">p</span>
 <span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span>())
 
-<span class="no">gd</span>$<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="kw">plot_air</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
+<span class="no">gd</span>$<span class="fu">preview</span>(<span class="kw">plot_air</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 <div id="limitations" class="section level2">
