@@ -14,6 +14,7 @@ axi_dev(
   ignore_color = TRUE,
   ignore_lwd = FALSE,
   line_overlap = 0.1,
+  min_overlap = -20,
   draw_fill = TRUE,
   hatch_angle = 45,
   optimize_order = "all",
@@ -29,6 +30,7 @@ ghost_dev(
   ignore_color = TRUE,
   ignore_lwd = FALSE,
   line_overlap = 0.1,
+  min_overlap = -20,
   draw_fill = TRUE,
   hatch_angle = 45,
   optimize_order = "all",
@@ -61,7 +63,12 @@ draw lines as a single pen stroke?}
 
 \item{line_overlap}{The overlap between adjacent pen strokes when filling out
 shapes and drawing thick lines, in mm. Setting this to a negative amount will
-cause gaps between the lines.}
+cause gaps between the lines. If \code{NA} the overlap will be calculated from the
+colour/fill alpha, scaled between \code{min_overlap} and \code{0.1}.}
+
+\item{min_overlap}{The lower bound in mm of the overlap if it is being
+calculated from the colour/fill alpha. Should be a negative value to ensure
+low alpha results in gapped hatching.}
 
 \item{draw_fill}{Logical. Should fill be drawn using hatching?}
 
@@ -82,11 +89,10 @@ behaves like \code{axi_dev()}, but instead of sending instructions to the plotte
 it will collect them and allow you to preview the movement of the pen.
 }
 \details{
-At the moment the device will ignore colour information and will only draw
-the stroke of objects. Further, any linetype information is lost. It will try
-to match the linewidth, but can obviously not draw something thinner than the
-tip of the pen. Clipping is, incredibly, supported, but text is not. Most of
-the restrictions above will be handled with time.
+At the moment the device will ignore linetype information but will try to
+match the linewidth (can obviously not draw something thinner than the tip of
+the pen). Clipping is, incredibly, supported, but text is not. Most of the
+restrictions above will be handled with time.
 }
 \examples{
 gd <- ghost_dev('A6')

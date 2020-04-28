@@ -5,11 +5,10 @@
 #' behaves like `axi_dev()`, but instead of sending instructions to the plotter
 #' it will collect them and allow you to preview the movement of the pen.
 #'
-#' At the moment the device will ignore colour information and will only draw
-#' the stroke of objects. Further, any linetype information is lost. It will try
-#' to match the linewidth, but can obviously not draw something thinner than the
-#' tip of the pen. Clipping is, incredibly, supported, but text is not. Most of
-#' the restrictions above will be handled with time.
+#' At the moment the device will ignore linetype information but will try to
+#' match the linewidth (can obviously not draw something thinner than the tip of
+#' the pen). Clipping is, incredibly, supported, but text is not. Most of the
+#' restrictions above will be handled with time.
 #'
 #' @param paper_size The size of the paper to draw on, either as a numeric
 #' vector  giving dimensions in mm, or as a standard paper size name.
@@ -29,7 +28,11 @@
 #' draw lines as a single pen stroke?
 #' @param line_overlap The overlap between adjacent pen strokes when filling out
 #' shapes and drawing thick lines, in mm. Setting this to a negative amount will
-#' cause gaps between the lines.
+#' cause gaps between the lines. If `NA` the overlap will be calculated from the
+#' colour/fill alpha, scaled between `min_overlap` and `0.1`.
+#' @param min_overlap The lower bound in mm of the overlap if it is being
+#' calculated from the colour/fill alpha. Should be a negative value to ensure
+#' low alpha results in gapped hatching.
 #' @param draw_fill Logical. Should fill be drawn using hatching?
 #' @param hatch_angle Angle in degrees that the hatching of fill should be drawn
 #' with. If `NA` a random angle will be chosen for each fill.
@@ -54,8 +57,9 @@
 #'
 axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
                     color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
-                    line_overlap = 0.1, draw_fill = TRUE, hatch_angle = 45,
-                    optimize_order = 'all', options = axi_options()) {
+                    line_overlap = 0.1, min_overlap = -20, draw_fill = TRUE,
+                    hatch_angle = 45, optimize_order = 'all',
+                    options = axi_options()) {
   paper_size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
   size <- paper_size - c(margins[2] + margins[4], margins[1] + margins[3])
@@ -69,7 +73,8 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
     ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
     p_width = paper_size[1], tip_size = tip_size, color = color,
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
-    line_overlap = line_overlap, draw_fill = draw_fill, hatch_angle = hatch_angle,
+    line_overlap = line_overlap, min_overlap = min_overlap,
+    draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
     first_page = TRUE, delta = c(0, 0)
   )
@@ -78,8 +83,8 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
 #' @export
 ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
                      color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
-                     line_overlap = 0.1, draw_fill = TRUE, hatch_angle = 45,
-                     optimize_order = 'all', options) {
+                     line_overlap = 0.1, min_overlap = -20, draw_fill = TRUE,
+                     hatch_angle = 45, optimize_order = 'all', options) {
   axidraw <- axi_ghost(units = 'cm', paper = paper_size)
   paper_size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
@@ -93,7 +98,8 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
     ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
     p_width = paper_size[1], tip_size = tip_size, color = color,
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
-    line_overlap = line_overlap, draw_fill = draw_fill, hatch_angle = hatch_angle,
+    line_overlap = line_overlap, min_overlap = min_overlap,
+    draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
     first_page = TRUE, delta = c(0, 0)
   )
@@ -298,7 +304,8 @@ update_stroke <- function(state, primitive) {
 }
 create_closed_stroke <- function(shapes, state) {
   stroke <- state$gc$lwd * 25.4 / 96
-  n_strokes <- ceiling(stroke / (state$rdata$tip_size - state$rdata$line_overlap))
+  overlap <- get_overlap(state, fill = FALSE)
+  n_strokes <- ceiling(stroke / (state$rdata$tip_size - overlap))
   if (state$rdata$ignore_lwd || stroke <= state$rdata$tip_size) {
     clip_closed_stroke(shapes, state)
   } else {
@@ -311,14 +318,15 @@ create_closed_stroke <- function(shapes, state) {
         miterlim = state$gc$lmitre
       )
       full_stroke <- polyclip::polyclip(full_stroke, clip_box(state), 'intersection')
-      fill_stroke(full_stroke, state$rdata$tip_size - state$rdata$line_overlap, n_strokes)
+      fill_stroke(full_stroke, state$rdata$tip_size - overlap, n_strokes)
     })
     unlist(all_strokes, recursive = FALSE, use.names = FALSE)
   }
 }
 create_open_stroke <- function(paths, state) {
   stroke <- state$gc$lwd * 25.4 / 96
-  n_strokes <- ceiling(stroke / (state$rdata$tip_size - state$rdata$line_overlap))
+  overlap <- get_overlap(state, fill = FALSE)
+  n_strokes <- ceiling(stroke / (state$rdata$tip_size - overlap))
   if (state$rdata$ignore_lwd || stroke <= state$rdata$tip_size) {
     paths <- lapply(paths, polyclip::polyclip, clip_box(state), 'intersection', closed = FALSE)
     unlist(paths, recursive = FALSE, use.names = FALSE)
@@ -332,17 +340,18 @@ create_open_stroke <- function(paths, state) {
         miterlim = state$gc$lmitre
       )
       full_path <- polyclip::polyclip(full_path, clip_box(state), 'intersection')
-      fill_stroke(full_path, state$rdata$tip_size - state$rdata$line_overlap, n_strokes)
+      fill_stroke(full_path, state$rdata$tip_size - overlap, n_strokes)
     })
     unlist(all_paths, recursive = FALSE, use.names = FALSE)
   }
 }
 create_fill <- function(fill, state) {
   fill <- polyclip::polyclip(fill, clip_box(state), 'intersection')
-  fill_shape(fill, state$rdata$tip_size, state$rdata$line_overlap, state$rdata$hatch_angle)
+  fill_shape(fill, state$rdata$tip_size, get_overlap(state, fill = TRUE), state$rdata$hatch_angle)
 }
 create_circle_fill <- function(x, y, r, angles, state) {
-  radii <- seq(r - state$rdata$tip_size / 2, 0, by = -(state$rdata$tip_size - state$rdata$line_overlap))
+  overlap <- get_overlap(state, fill = TRUE)
+  radii <- seq(r - state$rdata$tip_size / 2, 0, by = -(state$rdata$tip_size - overlap))
   radii <- unique(c(radii, 0))
   angles <- c(angles, angles[1])
   cos_a <- cos(angles)
@@ -572,4 +581,11 @@ optimize_order <- function(paths) {
   dist <- asym_dist(starts, ends)
   tour <- TSP::solve_TSP(TSP::ATSP(dist))
   paths[as.integer(tour)]
+}
+
+get_overlap <- function(state, fill = FALSE) {
+  if (!is.na(state$rdata$line_overlap)) return(state$rdata$line_overlap)
+
+  alpha <- if (fill) state$gc$fill[4] else state$gc$col[4]
+  (alpha / 255) * (0.1 - state$rdata$min_overlap) + state$rdata$min_overlap
 }

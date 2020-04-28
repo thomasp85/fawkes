@@ -55,7 +55,11 @@ axi_align <- function(options = axi_options()) {
 }
 #' @rdname axi_exec
 #'
-#' @inheritParams axi_dev
+#' @param tip_size The size of the tip (i.e. the width of the line it draws) of
+#' the initial pen
+#' @param line_overlap The overlap between adjacent pen strokes when filling out
+#' shapes and drawing thick lines, in mm. Setting this to a negative amount will
+#' cause gaps between the lines.
 #' @importFrom grid grid.newpage grid.circle grid.segments unit gpar
 #' @importFrom grDevices dev.off
 #' @export
