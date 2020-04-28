@@ -277,7 +277,7 @@ axidraw_callback <- function(device_call, args, state) {
 }
 
 has_stroke <- function(state) {
-  state$gc$lwd != 0 && state$gc$col[4] != 0 # && state$gc$lty != 0
+  state$gc$lwd != 0 && state$gc$col[4] != 0  && state$gc$lty != -1
 }
 has_fill <- function(state) {
   state$rdata$draw_fill && state$gc$fill[4] != 0
