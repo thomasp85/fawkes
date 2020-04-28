@@ -32,7 +32,7 @@
 #' cause gaps between the lines.
 #' @param draw_fill Logical. Should fill be drawn using hatching?
 #' @param hatch_angle Angle in degrees that the hatching of fill should be drawn
-#' with.
+#' with. If `NA` a random angle will be chosen for each fill.
 #' @param optimize_order Logical. Should the drawing order be optimised so that
 #' pen movement is minimised? Will only affect consecutive calls to the same
 #' drawing primitive.
@@ -407,6 +407,7 @@ fill_stroke <- function(outline, stroke_width, n_strokes) {
   })
 }
 fill_shape <- function(shape, tip_width, overlap, angle = 45) {
+  if (is.na(angle)) angle <- runif(1, max = 360)
   shape <- polyclip::polyoffset(shape, -tip_width / 2)
   bbox_x <- range(unlist(lapply(shape, `[[`, 'x')))
   bbox_y <- range(unlist(lapply(shape, `[[`, 'y')))

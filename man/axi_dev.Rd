@@ -66,7 +66,7 @@ cause gaps between the lines.}
 \item{draw_fill}{Logical. Should fill be drawn using hatching?}
 
 \item{hatch_angle}{Angle in degrees that the hatching of fill should be drawn
-with.}
+with. If \code{NA} a random angle will be chosen for each fill.}
 
 \item{optimize_order}{Logical. Should the drawing order be optimised so that
 pen movement is minimised? Will only affect consecutive calls to the same
