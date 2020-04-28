@@ -29,6 +29,7 @@ The following methods are available to the returned object:
 \itemize{
 \item \code{connect()}: Start a connection to the plotter.
 \item \code{disconnect()}: End a connection to the plotter.
+\item \code{update_options()}: Change the options of the plotter.
 \item \code{go_to()}: Move the plotter head to the absolute (x, y) position.
 \item \code{move_to()}: Move the plotter head to the absolute (x, y) position, raising
 the head if not already up.

@@ -15,6 +15,7 @@
 #' The following methods are available to the returned object:
 #' - `connect()`: Start a connection to the plotter.
 #' - `disconnect()`: End a connection to the plotter.
+#' - `update_options()`: Change the options of the plotter.
 #' - `go_to()`: Move the plotter head to the absolute (x, y) position.
 #' - `move_to()`: Move the plotter head to the absolute (x, y) position, raising
 #'   the head if not already up.
@@ -54,6 +55,11 @@ AxiManual <- R6::R6Class('AxiManual',
     },
     disconnect = function() {
       private$axidraw$disconnect()
+      invisible(self)
+    },
+    update_options = function(options) {
+      private$axidraw <- set_options(private$axidraw, options)
+      private$axidraw$update()
       invisible(self)
     },
     go_to = function(x, y) {
