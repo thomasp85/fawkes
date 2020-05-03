@@ -89,10 +89,8 @@ behaves like \code{axi_dev()}, but instead of sending instructions to the plotte
 it will collect them and allow you to preview the movement of the pen.
 }
 \details{
-At the moment the device will ignore linetype information but will try to
-match the linewidth (can obviously not draw something thinner than the tip of
-the pen). Clipping is, incredibly, supported, but text is not. Most of the
-restrictions above will be handled with time.
+At the moment the device does not support text. This will hopefully change in
+the future.
 }
 \examples{
 gd <- ghost_dev('A6')

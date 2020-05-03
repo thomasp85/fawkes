@@ -151,3 +151,7 @@ first <- function(x) x[[1]]
 asym_dist <- function(start, end) {
   .Call("asym_dist_c", as.numeric(start), as.numeric(end), PACKAGE = 'fawkes')
 }
+
+apply_linetype <- function(x, y, lty, lwd) {
+  .Call("line_pattern_c", as.numeric(x), as.numeric(y), as.integer(lty), as.numeric(lwd), PACKAGE = 'fawkes')
+}

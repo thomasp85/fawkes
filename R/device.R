@@ -5,10 +5,8 @@
 #' behaves like `axi_dev()`, but instead of sending instructions to the plotter
 #' it will collect them and allow you to preview the movement of the pen.
 #'
-#' At the moment the device will ignore linetype information but will try to
-#' match the linewidth (can obviously not draw something thinner than the tip of
-#' the pen). Clipping is, incredibly, supported, but text is not. Most of the
-#' restrictions above will be handled with time.
+#' At the moment the device does not support text. This will hopefully change in
+#' the future.
 #'
 #' @param paper_size The size of the paper to draw on, either as a numeric
 #' vector  giving dimensions in mm, or as a standard paper size name.
@@ -306,15 +304,27 @@ create_closed_stroke <- function(shapes, state) {
   stroke <- state$gc$lwd * 25.4 / 96
   overlap <- get_overlap(state, fill = FALSE)
   n_strokes <- ceiling(stroke / (state$rdata$tip_size - overlap))
+  endtype <- 'closedline'
+  if (state$gc$lty > 0) {
+    endtype <- ends[state$gc$lend]
+    shapes <- lapply(shapes, function(shape) {
+      shape <- apply_linetype(c(shape$x, shape$x[1]), c(shape$y, shape$y[1]), state$gc$lty, stroke)
+      lapply(split(seq_along(shape$x), shape$id), function(i) {
+        list(x = shape$x[i], y = shape$y[i])
+      })
+    })
+    shapes <- unlist(shapes, recursive = FALSE)
+  }
   if (state$rdata$ignore_lwd || stroke <= state$rdata$tip_size) {
     clip_closed_stroke(shapes, state)
   } else {
     all_strokes <- lapply(shapes, function(path) {
+      if (length(path$x) < 2) return()
       full_stroke <- polyclip::polylineoffset(
         path,
         (stroke - state$rdata$tip_size) / 2,
         jointype = joins[state$gc$ljoin],
-        endtype = 'closedline',
+        endtype = endtype,
         miterlim = state$gc$lmitre
       )
       full_stroke <- polyclip::polyclip(full_stroke, clip_box(state), 'intersection')
@@ -327,11 +337,21 @@ create_open_stroke <- function(paths, state) {
   stroke <- state$gc$lwd * 25.4 / 96
   overlap <- get_overlap(state, fill = FALSE)
   n_strokes <- ceiling(stroke / (state$rdata$tip_size - overlap))
+  if (state$gc$lty > 0) {
+    paths <- lapply(paths, function(path) {
+      path <- apply_linetype(path$x, path$y, state$gc$lty, stroke)
+      lapply(split(seq_along(path$x), path$id), function(i) {
+        list(x = path$x[i], y = path$y[i])
+      })
+    })
+    paths <- unlist(paths, recursive = FALSE)
+  }
   if (state$rdata$ignore_lwd || stroke <= state$rdata$tip_size) {
     paths <- lapply(paths, polyclip::polyclip, clip_box(state), 'intersection', closed = FALSE)
     unlist(paths, recursive = FALSE, use.names = FALSE)
   } else {
     all_paths <- lapply(paths, function(path) {
+      if (length(path$x) < 2) return()
       full_path <- polyclip::polylineoffset(
         path,
         (stroke - state$rdata$tip_size) / 2,
