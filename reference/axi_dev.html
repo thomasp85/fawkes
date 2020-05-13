@@ -126,7 +126,7 @@ it will collect them and allow you to preview the movement of the pen." />
 
     <div class="ref-description">
     <p><code>axi_dev()</code> opens up a graphic device that takes plotting instructions from
-e.g. <code><a href='https://rdrr.io/r/graphics/plot.html'>plot()</a></code> or ggplot2, and renders it with the AxiDraw. <code>ghost_dev()</code>
+e.g. <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code> or ggplot2, and renders it with the AxiDraw. <code>ghost_dev()</code>
 behaves like <code>axi_dev()</code>, but instead of sending instructions to the plotter
 it will collect them and allow you to preview the movement of the pen.</p>
     </div>
@@ -240,15 +240,13 @@ drawing primitive.</p></td>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>At the moment the device will ignore linetype information but will try to
-match the linewidth (can obviously not draw something thinner than the tip of
-the pen). Clipping is, incredibly, supported, but text is not. Most of the
-restrictions above will be handled with time.</p>
+    <p>At the moment the device does not support text. This will hopefully change in
+the future.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>gd</span> <span class='kw'>&lt;-</span> <span class='fu'>ghost_dev</span>(<span class='st'>'A6'</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>cars</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cars</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='no'>cars</span>))
 <span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
 
