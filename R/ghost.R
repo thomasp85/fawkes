@@ -52,6 +52,9 @@ AxiGhost <- R6::R6Class('AxiGhost',
     disconnect = function() {
       invisible(self)
     },
+    update_options = function(options) {
+      invisible(self)
+    },
     go_to = function(x, y) {
       private$append_row(x, y, private$pen_is_up)
       invisible(self)
