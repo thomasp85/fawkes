@@ -136,6 +136,12 @@ axidraw_callback <- function(device_call, args, state) {
   state$rdata$last_primitive <- NA
   state$rdata$calls <- list()
   state$rdata$ad$connect()
+  state$rdata$ad$set_pen_color(rgb(
+    state$rdata$color[1],
+    state$rdata$color[2],
+    state$rdata$color[3],
+    maxColorValue = 255
+  ))
   state
 }
 .axi_close <- function(args, state) {
@@ -573,6 +579,7 @@ update_pen <- function(state, color) {
       state$rdata$ad$update_options(pen$options)
     }
     state$rdata$color <- color
+    state$rdata$ad$set_pen_color(col)
   }
   state
 }

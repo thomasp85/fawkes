@@ -93,6 +93,9 @@ AxiManual <- R6::R6Class('AxiManual',
     pen_down = function() {
       private$axidraw$pendown()
       invisible(self)
+    },
+    set_pen_color = function(color) {
+      invisible(self)
     }
   ),
   private = list(

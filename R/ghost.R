@@ -102,27 +102,34 @@ AxiGhost <- R6::R6Class('AxiGhost',
       }
       invisible(self)
     },
-    preview = function(pen_colour = 'black', plot_air = FALSE, air_colour = 'red', size = 1, paper_colour = 'white', background = 'grey') {
+    set_pen_color = function(color) {
+      private$pen_has_color <- TRUE
+      private$current_color <- color
+      invisible(self)
+    },
+    preview = function(plot_air = FALSE, air_color = 'red', pen_color = NULL, size = 1, paper_color = 'white', background = 'grey') {
       path <- self$get_path()
       ids <- rle(path$raised)
       path$id <- rep(seq_along(ids$lengths), ids$lengths)
-      colour <- ifelse(ids$values, air_colour, pen_colour)
-      if (!plot_air) {
-        colour <- colour[!ids$values]
-        path <- path[!path$raised, ]
+      if (!is.null(pen_color)) path$color <- pen_color
+      if (plot_air) {
+        path$color[path$raised] <- air_color
+      } else {
+        path <- path[!path$raised, , drop = FALSE]
       }
+      color <- path$color[cumsum(rle(path$id)$lengths) - 1]
       grid::grid.newpage()
-      grid::grid.rect(gp = grid::gpar(fill = background, colour = NA))
+      grid::grid.rect(gp = grid::gpar(fill = background, col = NA))
       grid::grid.rect(x = grid::unit(0, 'npc'), y = grid::unit(1, 'npc'),
                       width = grid::unit(private$paper[2], 'mm'),
                       height = grid::unit(private$paper[1], 'mm'),
                       just = c('left', 'top'),
-                      gp = grid::gpar(fill = paper_colour, colour = NA))
+                      gp = grid::gpar(fill = paper_color, col = NA))
       grid::grid.polyline(
         x = grid::unit(path$x, private$unit),
         y = grid::unit(1, 'npc') - grid::unit(path$y, private$unit),
         id = path$id,
-        gp = grid::gpar(col = colour, lwd = size)
+        gp = grid::gpar(col = color, lwd = size)
       )
       invisible(self)
     },
@@ -131,18 +138,22 @@ AxiGhost <- R6::R6Class('AxiGhost',
       data.frame(
         x = private$path$x[ind],
         y = private$path$y[ind],
-        raised = private$path$raised[ind]
+        raised = private$path$raised[ind],
+        color = private$path$color[ind]
       )
     }
   ),
   private = list(
+    pen_has_color = FALSE,
+    current_color = NA_character_,
     pen_is_up = TRUE,
     unit = NULL,
     paper = NULL,
     path = list(
       x = 0,
       y = 0,
-      raised = TRUE
+      raised = TRUE,
+      color = NA_character_
     ),
     current_length = 1L,
     full_length = 100L,
@@ -154,7 +165,8 @@ AxiGhost <- R6::R6Class('AxiGhost',
       private$path <- list(
         x = c(private$path$x, rep(NA_real_, add_rows)),
         y = c(private$path$y, rep(NA_real_, add_rows)),
-        raised = c(private$path$raised, rep(NA, add_rows))
+        raised = c(private$path$raised, rep(NA, add_rows)),
+        color = c(private$path$color, rep(NA_character_, add_rows))
       )
       private$full_length <- length(private$path$x)
     },
@@ -162,7 +174,8 @@ AxiGhost <- R6::R6Class('AxiGhost',
       list(
         x = private$path$x[private$current_length],
         y = private$path$y[private$current_length],
-        raised = private$path$raised[private$current_length]
+        raised = private$path$raised[private$current_length],
+        color = private$path$color[private$current_length]
       )
     },
     append_row = function(x, y, raised) {
@@ -174,6 +187,7 @@ AxiGhost <- R6::R6Class('AxiGhost',
       private$path$x[ind] <- x
       private$path$y[ind] <- y
       private$path$raised[ind] <- raised
+      private$path$color[ind] <- private$current_color
       private$current_length <- private$current_length + nrows
     }
   )
