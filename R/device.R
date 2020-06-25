@@ -56,7 +56,7 @@
 axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
                     color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
                     line_overlap = 0.1, min_overlap = -20, draw_fill = TRUE,
-                    hatch_angle = 45, optimize_order = 'all',
+                    hatch_angle = 45, optimize_order = 'all', pens = list(),
                     options = axi_options()) {
   paper_size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
@@ -64,6 +64,7 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
   if (any(size <= 0)) {
     rlang::abort("margins larger than the paper size")
   }
+  pens <- validate_pens(pens, color, tip_size, options)
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
   axidraw <- axi_manual(units = 'cm', options)
@@ -74,15 +75,16 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
     line_overlap = line_overlap, min_overlap = min_overlap,
     draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
-    first_page = TRUE, delta = c(0, 0)
+    first_page = TRUE, delta = c(0, 0), pens = pens
   )
 }
 #' @rdname axi_dev
 #' @export
 ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
-                     color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
-                     line_overlap = 0.1, min_overlap = -20, draw_fill = TRUE,
-                     hatch_angle = 45, optimize_order = 'all', options) {
+                      color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
+                      line_overlap = 0.1, min_overlap = -20, draw_fill = TRUE,
+                      hatch_angle = 45, optimize_order = 'all', pens = list(),
+                      options = axi_options()) {
   axidraw <- axi_ghost(units = 'cm', paper = paper_size)
   paper_size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
@@ -90,6 +92,7 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
   if (any(size <= 0)) {
     rlang::abort("margins larger than the paper size")
   }
+  pens <- validate_pens(pens, color, tip_size, options)
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
   rdevice(axidraw_callback, device_name = 'ghost_device',
@@ -99,7 +102,7 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
     line_overlap = line_overlap, min_overlap = min_overlap,
     draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
-    first_page = TRUE, delta = c(0, 0)
+    first_page = TRUE, delta = c(0, 0), pens = pens
   )
   invisible(axidraw)
 }
@@ -533,28 +536,41 @@ update_pen <- function(state, color) {
     state$rdata$ad$move_to(0, 0)
     col <- rgb(color[1], color[2], color[3], maxColorValue = 255)
     col_fmt <- cli::make_ansi_style(col, bg = TRUE)
-    cli::cli_alert_warning("Please change pen color")
-    cli::cli_alert_info("New color: {col_fmt('  ')} ({col})")
-    cli::cli_alert_info("Enter new tip size (in mm) or leave blank to keep current {state$rdata$tip_size}mm")
-    tip_size <- readline()
-    if (tip_size != '') {
-      while (is.na(as.numeric(tip_size))) {
-        cli::cli_alert_warning('Invalid tip size `{tip_size}`. Enter a valid one:')
-        tip_size <- readline()
-        if (tip_size == '') break
+    if (is.null(state$rdata$pens[[col]])) {
+      cli::cli_alert_warning("Please change pen color")
+      cli::cli_alert_info("New color: {col_fmt('  ')} ({col})")
+      cli::cli_alert_info("Enter new tip size (in mm) or leave blank to keep current {state$rdata$tip_size}mm")
+      tip_size <- readline()
+      if (tip_size != '') {
+        while (is.na(as.numeric(tip_size))) {
+          cli::cli_alert_warning('Invalid tip size `{tip_size}`. Enter a valid one:')
+          tip_size <- readline()
+          if (tip_size == '') break
+        }
+        if (tip_size != '') state$rdata$tip_size <- as.numeric(tip_size)
       }
-      if (tip_size != '') state$rdata$tip_size <- as.numeric(tip_size)
-    }
-    cli::cli_alert_info("Enter tip offset relative to the first pen in mm (space separated) or leave blank if no offset")
-    state$rdata$delta <- c(0, 0)
-    delta <- readline()
-    if (delta != '') {
-      while (anyNA(as.numeric(strsplit(delta, '\\s+')[[1]])[1:2])) {
-        cli::cli_alert_warning('Invalid tip offset `{delta}`. Enter a valid one:')
-        tip_size <- readline()
-        if (tip_size == '') break
+      cli::cli_alert_info("Enter tip offset relative to the first pen in mm (space separated) or leave blank if no offset")
+      state$rdata$delta <- c(0, 0)
+      delta <- readline()
+      if (delta != '') {
+        while (anyNA(as.numeric(strsplit(delta, '\\s+')[[1]])[1:2])) {
+          cli::cli_alert_warning('Invalid tip offset `{delta}`. Enter a valid one:')
+          tip_size <- readline()
+          if (tip_size == '') break
+        }
+        if (delta != '') state$rdata$delta <- as.numeric(strsplit(delta, '\\s+')[[1]])[1:2]
       }
-      if (delta != '') state$rdata$delta <- as.numeric(strsplit(delta, '\\s+')[[1]])[1:2]
+    } else {
+      if (!inherits(state$rdata$ad, 'AxiGhost')) {
+        cli::cli_alert_warning("Please change pen color")
+        cli::cli_alert_info("New color: {col_fmt('  ')} ({col})")
+        cli::cli_alert_info("Predefined pen with {col} color detected. Press enter when switch is complete")
+        readline()
+      }
+      pen <- state$rdata$pens[[col]]
+      state$rdata$tip_size <- as.numeric(pen$tip_size)
+      state$rdata$delta <- as.numeric(pen$offset)
+      state$rdata$ad$update_options(pen$options)
     }
     state$rdata$color <- color
   }
