@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Setting options for AxiDraw — axi_options • fawkes</title>
+<title>Describe the characteristics of a pen — pen • fawkes</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,11 @@
 
 
 
-<meta property="og:title" content="Setting options for AxiDraw — axi_options" />
-<meta property="og:description" content="This function encapsulates defining general settings for the AxiDraw. Input
-will be checked against valid values." />
+<meta property="og:title" content="Describe the characteristics of a pen — pen" />
+<meta property="og:description" content="Pen plots can include ink from many pens and how they behave may differ.
+While some of these can be set when a new color is encountered it is often
+better and less error prone to define them upfront. It further allows you
+to specify specific axidraw options for each pen, e.g. travel speed." />
 <meta property="og:image" content="https://fawkes.data-imaginist.com/logo.svg" />
 
 
@@ -117,119 +119,48 @@ will be checked against valid values." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Setting options for AxiDraw</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thomasp85/fawkes/blob/master/R/options.R'><code>R/options.R</code></a></small>
-    <div class="hidden name"><code>axi_options.Rd</code></div>
+    <h1>Describe the characteristics of a pen</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thomasp85/fawkes/blob/master/R/pens.R'><code>R/pens.R</code></a></small>
+    <div class="hidden name"><code>pen.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function encapsulates defining general settings for the AxiDraw. Input
-will be checked against valid values.</p>
+    <p>Pen plots can include ink from many pens and how they behave may differ.
+While some of these can be set when a new color is encountered it is often
+better and less error prone to define them upfront. It further allows you
+to specify specific axidraw options for each pen, e.g. travel speed.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>(
-  speed_down = <span class='fl'>25</span>,
-  speed_up = <span class='fl'>75</span>,
-  acceleration = <span class='fl'>75</span>,
-  position_down = <span class='fl'>40</span>,
-  position_up = <span class='fl'>60</span>,
-  rate_lower = <span class='fl'>50</span>,
-  rate_raise = <span class='fl'>75</span>,
-  delay_down = <span class='fl'>0</span>,
-  delay_up = <span class='fl'>0</span>,
-  const_speed = <span class='fl'>FALSE</span>,
-  model = <span class='kw'>NULL</span>,
-  port = <span class='kw'>NULL</span>,
-  ignore_port = <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/pen.html'>pen</a></span>(<span class='kw'>color</span>, tip_size = <span class='kw'>NULL</span>, offset = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>), options = <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>speed_down</th>
-      <td><p>The maximum movement speed while the pen is lowered as a
-percentage of the maximum cariage speed. Values must lie between <code>1</code> and
-<code>110</code>. Unless <code>const_speed = TRUE</code> the carriage uses a smooth accelaration
-meaning that the maximum speed may only be reached during long straight
-draws. There is little gain in plotting time when increasing this value, but
-it may adversely affect quality.</p></td>
+      <th>color</th>
+      <td><p>The color that this pen corresponds to.</p></td>
     </tr>
     <tr>
-      <th>speed_up</th>
-      <td><p>As <code>speed_down</code> but for travel when the pen is raised.
-Movement when the pen is raised will always use acceleration and increasing
-this value can have a large effect and plotting time in cases where the pen
-jumps around a lot.</p></td>
+      <th>tip_size</th>
+      <td><p>The size of the line the pen leaves on the paper in mm</p></td>
     </tr>
     <tr>
-      <th>acceleration</th>
-      <td><p>Gives the acceleration and decelaretion speed as a
-percentage of the maximum rate. Values must lie between <code>1</code> and <code>100</code>.
-Changing this value will not affect the maximum speed, but how fast it will
-reach it.</p></td>
+      <th>offset</th>
+      <td><p>The x and y offset from the starting pen tip</p></td>
     </tr>
     <tr>
-      <th>position_down</th>
-      <td><p>The height of the pen when lowered as a percentage of
-vertical travel. Value must lie between <code>1</code> and <code>100</code>.</p></td>
-    </tr>
-    <tr>
-      <th>position_up</th>
-      <td><p>As <code>position_down</code> but setting the height of the pen when
-raised.</p></td>
-    </tr>
-    <tr>
-      <th>rate_lower</th>
-      <td><p>The rate of vertical movement when the pen is lowered given
-as a percentage of maximum vertical travel speed. Value must lie between <code>1</code>
-and <code>100</code>.</p></td>
-    </tr>
-    <tr>
-      <th>rate_raise</th>
-      <td><p>As <code>rate_lower</code> but for specifying relative speed when
-raising the pen.</p></td>
-    </tr>
-    <tr>
-      <th>delay_down</th>
-      <td><p>A delay in ms before commencing movement after the pen has
-been lowered. Value must lie between <code>-500</code> and <code>500</code>. A delay is
-automatically applied based on the position and rate, but this can be
-modified with this setting.</p></td>
-    </tr>
-    <tr>
-      <th>delay_up</th>
-      <td><p>As <code>delay_down</code> but for commencing movement after the pen has
-been raised.</p></td>
-    </tr>
-    <tr>
-      <th>const_speed</th>
-      <td><p>A boolean given whether the carriage should travel with
-maximum speed while the pen is down, or use the smooth acceleration.</p></td>
-    </tr>
-    <tr>
-      <th>model</th>
-      <td><p>The AxiDraw model to use. This will affect the travel limits
-imposed on the carriage. Valid values are <code>'A4'</code>, <code>'A3'</code>, or <code>'XL'</code>. If
-<code>NULL</code> the value will be taken from the <code>'fawkes.model'</code> option or <code>'A4'</code> if
-missing.</p></td>
-    </tr>
-    <tr>
-      <th>port</th>
-      <td><p>The port connection to use. If <code>NULL</code> it will be resolved
-automatically.</p></td>
-    </tr>
-    <tr>
-      <th>ignore_port</th>
-      <td><p>If set to <code>TRUE</code> it will always communicate with the
-first device located even if it is not the one given by <code>port</code></p></td>
+      <th>options</th>
+      <td><p>An <code>axi_options</code> object. See the documentation for
+<code><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options()</a></code> for all the settings.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An <code>axi_options</code> object</p>
+    <p>An <code>axi_pen</code> object</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/pen.html'>pen</a></span>(color = <span class='st'>'forestgreen'</span>, tip_size = <span class='fl'>2</span>)</div><div class='output co'>#&gt; <span class='message'><span style='font-weight: bold;'>Color</span><span>..... </span><span style='background-color: #00BB00;'>  </span><span> (forestgreen)</span></div><div class='output co'>#&gt; <span class='message'></span><span style='font-weight: bold;'>Tip</span><span>....... 2 mm</span></div><div class='output co'>#&gt; <span class='message'></span><span style='font-weight: bold;'>Offset</span><span>.... x: 0 mm, y: 0 mm</span></div><div class='input'></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

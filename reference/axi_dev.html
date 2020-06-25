@@ -125,42 +125,42 @@ it will collect them and allow you to preview the movement of the pen." />
     </div>
 
     <div class="ref-description">
-    <p><code>axi_dev()</code> opens up a graphic device that takes plotting instructions from
-e.g. <code><a href='https://rdrr.io/r/base/plot.html'>plot()</a></code> or ggplot2, and renders it with the AxiDraw. <code>ghost_dev()</code>
-behaves like <code>axi_dev()</code>, but instead of sending instructions to the plotter
+    <p><code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev()</a></code> opens up a graphic device that takes plotting instructions from
+e.g. <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> or ggplot2, and renders it with the AxiDraw. <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev()</a></code>
+behaves like <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev()</a></code>, but instead of sending instructions to the plotter
 it will collect them and allow you to preview the movement of the pen.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>axi_dev</span>(
-  <span class='kw'>paper_size</span> <span class='kw'>=</span> <span class='st'>"A4"</span>,
-  <span class='kw'>portrait</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>margins</span> <span class='kw'>=</span> <span class='fl'>20</span>,
-  <span class='kw'>tip_size</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>color</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
-  <span class='kw'>ignore_color</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>ignore_lwd</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>line_overlap</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>min_overlap</span> <span class='kw'>=</span> -<span class='fl'>20</span>,
-  <span class='kw'>draw_fill</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>hatch_angle</span> <span class='kw'>=</span> <span class='fl'>45</span>,
-  <span class='kw'>optimize_order</span> <span class='kw'>=</span> <span class='st'>"all"</span>,
-  <span class='kw'>options</span> <span class='kw'>=</span> <span class='fu'><a href='axi_options.html'>axi_options</a></span>()
+    <pre class="usage"><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev</a></span>(
+  paper_size = <span class='st'>"A4"</span>,
+  portrait = <span class='fl'>TRUE</span>,
+  margins = <span class='fl'>20</span>,
+  tip_size = <span class='fl'>1</span>,
+  color = <span class='st'>"black"</span>,
+  ignore_color = <span class='fl'>TRUE</span>,
+  ignore_lwd = <span class='fl'>FALSE</span>,
+  line_overlap = <span class='fl'>0.1</span>,
+  min_overlap = <span class='op'>-</span><span class='fl'>20</span>,
+  draw_fill = <span class='fl'>TRUE</span>,
+  hatch_angle = <span class='fl'>45</span>,
+  optimize_order = <span class='st'>"all"</span>,
+  options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>()
 )
 
-<span class='fu'>ghost_dev</span>(
-  <span class='kw'>paper_size</span> <span class='kw'>=</span> <span class='st'>"A4"</span>,
-  <span class='kw'>portrait</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>margins</span> <span class='kw'>=</span> <span class='fl'>20</span>,
-  <span class='kw'>tip_size</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>color</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
-  <span class='kw'>ignore_color</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>ignore_lwd</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>line_overlap</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>min_overlap</span> <span class='kw'>=</span> -<span class='fl'>20</span>,
-  <span class='kw'>draw_fill</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>hatch_angle</span> <span class='kw'>=</span> <span class='fl'>45</span>,
-  <span class='kw'>optimize_order</span> <span class='kw'>=</span> <span class='st'>"all"</span>,
-  <span class='no'>options</span>
+<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev</a></span>(
+  paper_size = <span class='st'>"A4"</span>,
+  portrait = <span class='fl'>TRUE</span>,
+  margins = <span class='fl'>20</span>,
+  tip_size = <span class='fl'>1</span>,
+  color = <span class='st'>"black"</span>,
+  ignore_color = <span class='fl'>TRUE</span>,
+  ignore_lwd = <span class='fl'>FALSE</span>,
+  line_overlap = <span class='fl'>0.1</span>,
+  min_overlap = <span class='op'>-</span><span class='fl'>20</span>,
+  draw_fill = <span class='fl'>TRUE</span>,
+  hatch_angle = <span class='fl'>45</span>,
+  optimize_order = <span class='st'>"all"</span>,
+  <span class='kw'>options</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -234,7 +234,7 @@ drawing primitive.</p></td>
     <tr>
       <th>options</th>
       <td><p>An <code>axi_options</code> object. See the documentation for
-<code><a href='axi_options.html'>axi_options()</a></code> for all the settings.</p></td>
+<code><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options()</a></code> for all the settings.</p></td>
     </tr>
     </table>
 
@@ -244,14 +244,10 @@ drawing primitive.</p></td>
 the future.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>gd</span> <span class='kw'>&lt;-</span> <span class='fu'>ghost_dev</span>(<span class='st'>'A6'</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cars</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='no'>cars</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
+    <pre class="examples"><div class='input'><span class='kw'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev</a></span>(<span class='st'>'A6'</span>)</div><div class='output co'>#&gt; <span class='error'>Error in is_axi_options(options): could not find function "is_axi_options"</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(mar = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>cars</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='kw'>cars</span>))</div><div class='img'><img src='axi_dev-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
 
-<span class='no'>gd</span>$<span class='fu'>preview</span>(<span class='kw'>plot_air</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='axi_dev-1.png' alt='' width='700' height='433' /></div><div class='input'>
-</div></pre>
+<span class='kw'>gd</span><span class='op'>$</span><span class='fu'>preview</span>(plot_air = <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'gd' not found</span></div><div class='input'></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
