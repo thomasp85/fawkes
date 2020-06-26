@@ -18,6 +18,7 @@ axi_dev(
   draw_fill = TRUE,
   hatch_angle = 45,
   optimize_order = "all",
+  pens = list(),
   options = axi_options()
 )
 
@@ -34,6 +35,7 @@ ghost_dev(
   draw_fill = TRUE,
   hatch_angle = 45,
   optimize_order = "all",
+  pens = list(),
   options
 )
 }

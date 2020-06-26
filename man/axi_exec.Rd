@@ -7,6 +7,7 @@
 \alias{axi_toggle_pen}
 \alias{axi_align}
 \alias{axi_pen_test}
+\alias{axi_pen_align}
 \title{Execute direct commands to the AxiDraw plotter}
 \usage{
 axi_version(options = axi_options())
@@ -18,6 +19,8 @@ axi_toggle_pen(options = axi_options())
 axi_align(options = axi_options())
 
 axi_pen_test(tip_size, line_overlap, options = axi_options())
+
+axi_pen_align(x_offset = 0, y_offset = 0)
 }
 \arguments{
 \item{options}{An \code{axi_options} object. See the documentation for
@@ -30,6 +33,8 @@ the initial pen}
 \item{line_overlap}{The overlap between adjacent pen strokes when filling out
 shapes and drawing thick lines, in mm. Setting this to a negative amount will
 cause gaps between the lines.}
+
+\item{x_offset, y_offset}{The offsets in mm to test}
 }
 \description{
 These small utility functions are not concerned with plotting, but rather
@@ -45,5 +50,9 @@ The different functions have various, unrelated, uses:
 and vice versa)
 \item \code{axi_align()} raises the pen and turns off the stepper motors so the
 carriage can be moved freely.
+\item \code{axi_pen_test()} will test the look of filled areas with respect to a
+specific pen setting
+\item \code{axi_pen_align()} allows you to test different offset values between two
+pens to determine the correct setting.
 }
 }

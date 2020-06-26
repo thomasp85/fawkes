@@ -21,10 +21,13 @@ if that is unset, then the \code{r-reticulate} environment will be used.}
 method that will work in the local environment. Change the default to force
 a specific installation method. Note that the "virtualenv" method is not
 available on Windows.}
-    \item{\code{conda}}{Path to conda executable (or "auto" to find conda using the
-PATH and other conventional install locations).}
+    \item{\code{conda}}{The path to a \code{conda} executable. Use \code{"auto"} to allow \code{reticulate} to
+automatically find an appropriate \code{conda} binary. See \strong{Finding Conda} for more details.}
     \item{\code{python_version}}{The requested Python version. Ignored when attempting
 to install with a Python virtual environment.}
+    \item{\code{pip}}{Boolean; use \code{pip} for package installation? This is only relevant
+when Conda environments are used, as otherwise packages will be installed
+from the Conda repositories.}
   }}
 }
 \description{

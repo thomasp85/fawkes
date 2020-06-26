@@ -21,15 +21,15 @@
 #' the initial pen
 #' @param color The color of the initial pen
 #' @param ignore_color Logical. Should changes in color output be ignored? If
-#' `TRUE` the plotter will not pause for pen change when the colour changes
+#' `TRUE` the plotter will not pause for pen change when the color changes
 #' @param ignore_lwd Logical. Should the device ignore the lwd and also just
 #' draw lines as a single pen stroke?
 #' @param line_overlap The overlap between adjacent pen strokes when filling out
 #' shapes and drawing thick lines, in mm. Setting this to a negative amount will
 #' cause gaps between the lines. If `NA` the overlap will be calculated from the
-#' colour/fill alpha, scaled between `min_overlap` and `0.1`.
+#' color/fill alpha, scaled between `min_overlap` and `0.1`.
 #' @param min_overlap The lower bound in mm of the overlap if it is being
-#' calculated from the colour/fill alpha. Should be a negative value to ensure
+#' calculated from the color/fill alpha. Should be a negative value to ensure
 #' low alpha results in gapped hatching.
 #' @param draw_fill Logical. Should fill be drawn using hatching?
 #' @param hatch_angle Angle in degrees that the hatching of fill should be drawn
