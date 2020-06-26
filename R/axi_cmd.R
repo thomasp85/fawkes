@@ -16,6 +16,10 @@
 #'   and vice versa)
 #' - `axi_align()` raises the pen and turns off the stepper motors so the
 #'   carriage can be moved freely.
+#' - `axi_pen_test()` will test the look of filled areas with respect to a
+#'   specific pen setting
+#' - `axi_pen_align()` allows you to test different offset values between two
+#'   pens to determine the correct setting.
 #'
 #' @rdname axi_exec
 #' @name axi_exec
@@ -72,6 +76,40 @@ axi_pen_test <- function(tip_size, line_overlap, options = axi_options()) {
                 unit(4, 'cm') * tip_size, unit(1, 'npc') - unit(1, 'cm') * tip_size,
                 gp = gpar(lwd = 20 * tip_size))
   dev.off()
+}
+#' @rdname axi_exec
+#'
+#' @param x_offset,y_offset The offsets in mm to test
+#' @export
+axi_pen_align <- function(x_offset = 0, y_offset = 0) {
+  n <- max(length(x_offset), length(y_offset))
+  x_offset <- rep_len(x_offset, n) / 10
+  y_offset <- rep_len(y_offset, n) / 10
+  ad <- axi_manual(units = 'cm', options = axi_options())
+  ad$connect()
+  cli::cli_alert_info('Insert reference pen and press enter')
+  readline()
+  ad$move_rel(0, 1)
+  for (i in seq_along(x_offset)) {
+    ad$move_rel(1, 0)
+    ad$line_rel(1, 1)
+    ad$move_rel(-1, 0)
+    ad$line_rel(1, -1)
+  }
+  ad$move_to(0, 0)
+  cli::cli_alert_info('Switch to offset pen and press enter')
+  readline()
+  ad$move_rel(0, 1.5)
+  for (i in seq_along(x_offset)) {
+    ad$move_rel(1.5, -0.5)
+    ad$move_rel(-x_offset[i], -y_offset[i])
+    ad$line_rel(0, 1)
+    ad$move_rel(-0.5, -0.5)
+    ad$line_rel(1, 0)
+    ad$move_rel(x_offset[i], y_offset[i])
+  }
+  ad$move_to(0, 0)
+  ad$disconnect()
 }
 
 empty_axi <- function() {
