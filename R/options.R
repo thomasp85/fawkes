@@ -69,9 +69,10 @@ axi_options <- function(speed_down = 25, speed_up = 75, acceleration = 75,
   class(opt) <- 'axi_options'
   opt
 }
+is_axi_options <- function(x) inherits(x, 'axi_options')
 
 set_options <- function(axidraw, options) {
-  if (!inherits(options, 'axi_options')) {
+  if (!is_axi_options(options)) {
     stop('options must be specified with `axi_options()`', call. = FALSE)
   }
   for (opt in names(options)) {
