@@ -36,7 +36,7 @@ ghost_dev(
   hatch_angle = 45,
   optimize_order = "all",
   pens = list(),
-  options
+  options = axi_options()
 )
 }
 \arguments{
@@ -58,7 +58,7 @@ the initial pen}
 \item{color}{The color of the initial pen}
 
 \item{ignore_color}{Logical. Should changes in color output be ignored? If
-\code{TRUE} the plotter will not pause for pen change when the colour changes}
+\code{TRUE} the plotter will not pause for pen change when the color changes}
 
 \item{ignore_lwd}{Logical. Should the device ignore the lwd and also just
 draw lines as a single pen stroke?}
@@ -66,10 +66,10 @@ draw lines as a single pen stroke?}
 \item{line_overlap}{The overlap between adjacent pen strokes when filling out
 shapes and drawing thick lines, in mm. Setting this to a negative amount will
 cause gaps between the lines. If \code{NA} the overlap will be calculated from the
-colour/fill alpha, scaled between \code{min_overlap} and \code{0.1}.}
+color/fill alpha, scaled between \code{min_overlap} and \code{0.1}.}
 
 \item{min_overlap}{The lower bound in mm of the overlap if it is being
-calculated from the colour/fill alpha. Should be a negative value to ensure
+calculated from the color/fill alpha. Should be a negative value to ensure
 low alpha results in gapped hatching.}
 
 \item{draw_fill}{Logical. Should fill be drawn using hatching?}
@@ -88,7 +88,10 @@ drawing primitive.}
 \code{axi_dev()} opens up a graphic device that takes plotting instructions from
 e.g. \code{plot()} or ggplot2, and renders it with the AxiDraw. \code{ghost_dev()}
 behaves like \code{axi_dev()}, but instead of sending instructions to the plotter
-it will collect them and allow you to preview the movement of the pen.
+it will collect them and allow you to preview the movement of the pen and
+send the instructions to the plotter at a later stage. For more complex plots
+it is adviced to use the asynchronous \code{ghost_dev()} as it makes it easier to
+pause and rewind the plot if something goes wrong or a pen runs dry.
 }
 \details{
 At the moment the device does not support text. This will hopefully change in

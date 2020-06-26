@@ -3,7 +3,10 @@
 #' `axi_dev()` opens up a graphic device that takes plotting instructions from
 #' e.g. `plot()` or ggplot2, and renders it with the AxiDraw. `ghost_dev()`
 #' behaves like `axi_dev()`, but instead of sending instructions to the plotter
-#' it will collect them and allow you to preview the movement of the pen.
+#' it will collect them and allow you to preview the movement of the pen and
+#' send the instructions to the plotter at a later stage. For more complex plots
+#' it is adviced to use the asynchronous `ghost_dev()` as it makes it easier to
+#' pause and rewind the plot if something goes wrong or a pen runs dry.
 #'
 #' At the moment the device does not support text. This will hopefully change in
 #' the future.
@@ -75,7 +78,7 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
     line_overlap = line_overlap, min_overlap = min_overlap,
     draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
-    first_page = TRUE, delta = c(0, 0), pens = pens
+    first_page = TRUE, delta = c(0, 0), pens = pens, options = options
   )
 }
 #' @rdname axi_dev
@@ -102,7 +105,7 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
     line_overlap = line_overlap, min_overlap = min_overlap,
     draw_fill = draw_fill, hatch_angle = hatch_angle,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
-    first_page = TRUE, delta = c(0, 0), pens = pens
+    first_page = TRUE, delta = c(0, 0), pens = pens, options = options
   )
   invisible(axidraw)
 }
@@ -566,6 +569,8 @@ update_pen <- function(state, color) {
         }
         if (delta != '') state$rdata$delta <- as.numeric(strsplit(delta, '\\s+')[[1]])[1:2]
       }
+      state$rdata$ad$update_options(state$rdata$options)
+      pen <- pen(col, state$rdata$tip_size, state$rdata$delta, state$rdata$options)
     } else {
       if (!inherits(state$rdata$ad, 'AxiGhost')) {
         cli::cli_alert_warning("Please change pen color")
@@ -579,7 +584,7 @@ update_pen <- function(state, color) {
       state$rdata$ad$update_options(pen$options)
     }
     state$rdata$color <- color
-    state$rdata$ad$set_pen_color(col)
+    state$rdata$ad$set_pen_color(col, pen)
   }
   state
 }

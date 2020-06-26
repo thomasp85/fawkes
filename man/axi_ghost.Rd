@@ -2,7 +2,7 @@
 % Please edit documentation in R/ghost.R
 \name{axi_ghost}
 \alias{axi_ghost}
-\title{A mock of a manual axidraw connection}
+\title{An asynchronous version of a manual axidraw connection}
 \usage{
 axi_ghost(units = "cm", paper = "A4")
 }
@@ -14,17 +14,19 @@ be interpreted in.}
 method.}
 }
 \value{
-An object with the methods given in the \emph{Instructions} section.
+An object with the methods given in the \emph{Recording Instructions} and
+\emph{After Recording} sections.
 }
 \description{
-This function creates a mock of the manual axidraw connection with the same
-methods. The mock will collect all the instructions and provides a \code{preview()}
-method for inspecting the look of the output. As such it can be used to debug
-or test code without being connected to an AxiDraw.
+This function creates a version of a manual axidraw connection that instead
+of sending instructions to the plotter will collect them for later replay.
+For bigger plots it is preferred to use this as it makes it easier to pause
+and rewind if something goes wrong.
 }
-\section{Instructions}{
+\section{Recording Instructions}{
 
-The following methods are available to the returned object:
+The following methods are available for recording drawing instructions and
+mirror those of \code{\link[=axi_manual]{axi_manual()}}:
 \itemize{
 \item \code{connect()}: Start a connection to the plotter.
 \item \code{disconnect()}: End a connection to the plotter.
@@ -40,6 +42,31 @@ the head if not already up.
 the head if not already down.
 \item \code{pen_up()}: Raise the pen head.
 \item \code{pen_down()}: Lower the pen head.
+\item \code{set_pen_color()}: Records the color of the pen currently in use.
+}
+}
+
+\section{After Recording}{
+
+Once the instructions have been recorded there is a bunch of stuff you can do
+with it:
+\itemize{
+\item \code{plot()}: Will take the recorded data and send it to the plotter, for real
+this time. During plotting an internal counter will keep track of where you
+are so that you can pause and resume the plot at any time.
+\item \code{preview()}: Will render the plotter movement on screen. You can choose to
+only show drawing movement, or air movement as well. Further, you can
+either set a single color for the drawing lines or use the color encoded
+with the movement. Lastly, it is possible to draw all movement or either
+the remaining or already drawn parts, which uses the internal counter to
+figure out how for proceeded.
+\item \code{get_pen_position()}: Get the internal counter. The counter records
+everything between a pen down and a pen up as a single movement.
+\item \code{set_pen_position()}: Sets a new pen position manually.
+\item \code{rewind_pen_postion()}: Move the pen position backwards in time.
+\item \code{forward_pen_position()}: Move the pen position forward in time.
+\item \code{reset_pen_position()}: Sets the pen position to the start of the plot.
+\item \code{get_path()}: Returns the recorded movement information.
 }
 }
 

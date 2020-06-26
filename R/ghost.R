@@ -1,17 +1,18 @@
-#' A mock of a manual axidraw connection
+#' An asynchronous version of a manual axidraw connection
 #'
-#' This function creates a mock of the manual axidraw connection with the same
-#' methods. The mock will collect all the instructions and provides a `preview()`
-#' method for inspecting the look of the output. As such it can be used to debug
-#' or test code without being connected to an AxiDraw.
+#' This function creates a version of a manual axidraw connection that instead
+#' of sending instructions to the plotter will collect them for later replay.
+#' For bigger plots it is preferred to use this as it makes it easier to pause
+#' and rewind if something goes wrong.
 #'
 #' @param units Either `'cm'` or `'in'` giving the unit the instructions should
 #' be interpreted in.
 #' @param paper The size of the paper to plot on. Is only relevant for the plot
 #' method.
 #'
-#' @section Instructions:
-#' The following methods are available to the returned object:
+#' @section Recording Instructions:
+#' The following methods are available for recording drawing instructions and
+#' mirror those of [axi_manual()]:
 #' - `connect()`: Start a connection to the plotter.
 #' - `disconnect()`: End a connection to the plotter.
 #' - `go_to()`: Move the plotter head to the absolute (x, y) position.
@@ -26,8 +27,30 @@
 #'   the head if not already down.
 #' - `pen_up()`: Raise the pen head.
 #' - `pen_down()`: Lower the pen head.
+#' - `set_pen_color()`: Records the color of the pen currently in use.
 #'
-#' @return An object with the methods given in the *Instructions* section.
+#' @section After Recording:
+#' Once the instructions have been recorded there is a bunch of stuff you can do
+#' with it:
+#' - `plot()`: Will take the recorded data and send it to the plotter, for real
+#'   this time. During plotting an internal counter will keep track of where you
+#'   are so that you can pause and resume the plot at any time.
+#' - `preview()`: Will render the plotter movement on screen. You can choose to
+#'   only show drawing movement, or air movement as well. Further, you can
+#'   either set a single color for the drawing lines or use the color encoded
+#'   with the movement. Lastly, it is possible to draw all movement or either
+#'   the remaining or already drawn parts, which uses the internal counter to
+#'   figure out how for proceeded.
+#' - `get_pen_position()`: Get the internal counter. The counter records
+#'   everything between a pen down and a pen up as a single movement.
+#' - `set_pen_position()`: Sets a new pen position manually.
+#' - `rewind_pen_postion()`: Move the pen position backwards in time.
+#' - `forward_pen_position()`: Move the pen position forward in time.
+#' - `reset_pen_position()`: Sets the pen position to the start of the plot.
+#' - `get_path()`: Returns the recorded movement information.
+#'
+#' @return An object with the methods given in the *Recording Instructions* and
+#' *After Recording* sections.
 #'
 #' @export
 axi_ghost <- function(units = 'cm', paper = 'A4') {
@@ -102,12 +125,14 @@ AxiGhost <- R6::R6Class('AxiGhost',
       }
       invisible(self)
     },
-    set_pen_color = function(color) {
+    set_pen_color = function(color, pen, ...) {
       private$pen_has_color <- TRUE
       private$current_color <- color
+      private$pens[[color]] <- pen
       invisible(self)
     },
-    preview = function(plot_air = FALSE, air_color = 'red', pen_color = NULL, size = 1, paper_color = 'white', background = 'grey') {
+    preview = function(plot_air = FALSE, air_color = 'red', pen_color = NULL, size = 1, paper_color = 'white', background = 'grey', show = 'all') {
+      show <- match.arg(show, c('all', 'drawn', 'remaining'))
       path <- self$get_path()
       ids <- rle(path$raised)
       path$id <- rep(seq_along(ids$lengths), ids$lengths)
@@ -116,6 +141,15 @@ AxiGhost <- R6::R6Class('AxiGhost',
         path$color[path$raised] <- air_color
       } else {
         path <- path[!path$raised, , drop = FALSE]
+      }
+      if (show == 'drawn') {
+        pen_id <- unique(path$id[!path$raised])[private$pen_position]
+        pen_ind <- match(pen_id, path$id)
+        path <- path[seq_len(pen_ind - 1), , drop = FALSE]
+      } else if (show == 'remaining') {
+        pen_id <- unique(path$id[!path$raised])[private$pen_position]
+        pen_ind <- match(pen_id, path$id)
+        path <- path[seq(pen_ind, nrow(path)), , drop = FALSE]
       }
       color <- path$color[cumsum(rle(path$id)$lengths) - 1]
       grid::grid.newpage()
@@ -133,6 +167,61 @@ AxiGhost <- R6::R6Class('AxiGhost',
       )
       invisible(self)
     },
+    plot = function(reset = FALSE) {
+      ad <- axi_manual()
+      ad$connect()
+
+      if (reset) private$pen_location <- 1L
+
+      path <- self$get_path()
+      ids <- rle(path$raised)
+      path$id <- rep(seq_along(ids$lengths), ids$lengths)
+      path <- path[!path$raised, , drop = FALSE]
+      path <- split(path, path$id)
+      if (private$pen_location > length(path)) {
+        message("Nothing to plot. Try resetting the pen location")
+        return(invisible(self))
+      }
+      path  <- path[seq(private$pen_location, length(path))]
+
+      current_color <- ''
+      on.exit({
+        ad$move_to(0, 0)
+        ad$disconnect()
+      })
+      for (p in path) {
+        if (p$color[1] != current_color && private$pen_has_color) {
+          ad$move_to(0, 0)
+          col_fmt <- cli::make_ansi_style(p$color[1], bg = TRUE)
+          cli::cli_alert_warning("Please change pen color")
+          cli::cli_alert_info("New color: {col_fmt('  ')} ({p$color[1]})")
+          readline()
+          ad$update_options(private$pens[[p$color[1]]]$options)
+          current_color <- p$color[1]
+        }
+        ad$move_to(p$x[1], p$y[1])
+        for (i in seq_along(p$x)[-1]) {
+          ad$line_to(p$x[i], p$y[i])
+        }
+        ad$pen_up()
+        private$pen_location <- private$pen_location + 1L
+      }
+    },
+    get_pen_position = function() {
+      private$pen_position
+    },
+    rewind_pen_position = function(by = 1L) {
+      private$pen_position <- private$pen_position - as.integer(by)
+    },
+    forward_pen_position = function(by = 1L) {
+      private$pen_position <- private$pen_position + as.integer(by)
+    },
+    reset_pen_position = function() {
+      private$pen_position <- 1L
+    },
+    set_pen_position = function(at) {
+      private$pen_position <- as.integer(at)
+    },
     get_path = function() {
       ind <- seq_len(private$current_length)
       data.frame(
@@ -144,9 +233,11 @@ AxiGhost <- R6::R6Class('AxiGhost',
     }
   ),
   private = list(
+    pen_location = 1L,
     pen_has_color = FALSE,
     current_color = NA_character_,
     pen_is_up = TRUE,
+    pens = list(),
     unit = NULL,
     paper = NULL,
     path = list(
