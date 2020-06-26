@@ -143,11 +143,11 @@ AxiGhost <- R6::R6Class('AxiGhost',
         path <- path[!path$raised, , drop = FALSE]
       }
       if (show == 'drawn') {
-        pen_id <- unique(path$id[!path$raised])[private$pen_position]
+        pen_id <- unique(path$id[!path$raised])[private$pen_location]
         pen_ind <- match(pen_id, path$id)
         path <- path[seq_len(pen_ind - 1), , drop = FALSE]
       } else if (show == 'remaining') {
-        pen_id <- unique(path$id[!path$raised])[private$pen_position]
+        pen_id <- unique(path$id[!path$raised])[private$pen_location]
         pen_ind <- match(pen_id, path$id)
         path <- path[seq(pen_ind, nrow(path)), , drop = FALSE]
       }
@@ -208,19 +208,19 @@ AxiGhost <- R6::R6Class('AxiGhost',
       }
     },
     get_pen_position = function() {
-      private$pen_position
+      private$pen_location
     },
     rewind_pen_position = function(by = 1L) {
-      private$pen_position <- private$pen_position - as.integer(by)
+      private$pen_location <- private$pen_location - as.integer(by)
     },
     forward_pen_position = function(by = 1L) {
-      private$pen_position <- private$pen_position + as.integer(by)
+      private$pen_location <- private$pen_location + as.integer(by)
     },
     reset_pen_position = function() {
-      private$pen_position <- 1L
+      private$pen_location <- 1L
     },
     set_pen_position = function(at) {
-      private$pen_position <- as.integer(at)
+      private$pen_location <- as.integer(at)
     },
     get_path = function() {
       ind <- seq_len(private$current_length)
