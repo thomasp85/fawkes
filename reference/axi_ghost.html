@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>A mock of a manual axidraw connection — axi_ghost • fawkes</title>
+<title>An asynchronous version of a manual axidraw connection — axi_ghost • fawkes</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,11 +46,11 @@
 
 
 
-<meta property="og:title" content="A mock of a manual axidraw connection — axi_ghost" />
-<meta property="og:description" content="This function creates a mock of the manual axidraw connection with the same
-methods. The mock will collect all the instructions and provides a preview()
-method for inspecting the look of the output. As such it can be used to debug
-or test code without being connected to an AxiDraw." />
+<meta property="og:title" content="An asynchronous version of a manual axidraw connection — axi_ghost" />
+<meta property="og:description" content="This function creates a version of a manual axidraw connection that instead
+of sending instructions to the plotter will collect them for later replay.
+For bigger plots it is preferred to use this as it makes it easier to pause
+and rewind if something goes wrong." />
 <meta property="og:image" content="https://fawkes.data-imaginist.com/logo.svg" />
 
 
@@ -119,16 +119,16 @@ or test code without being connected to an AxiDraw." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>A mock of a manual axidraw connection</h1>
+    <h1>An asynchronous version of a manual axidraw connection</h1>
     <small class="dont-index">Source: <a href='https://github.com/thomasp85/fawkes/blob/master/R/ghost.R'><code>R/ghost.R</code></a></small>
     <div class="hidden name"><code>axi_ghost.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function creates a mock of the manual axidraw connection with the same
-methods. The mock will collect all the instructions and provides a <code>preview()</code>
-method for inspecting the look of the output. As such it can be used to debug
-or test code without being connected to an AxiDraw.</p>
+    <p>This function creates a version of a manual axidraw connection that instead
+of sending instructions to the plotter will collect them for later replay.
+For bigger plots it is preferred to use this as it makes it easier to pause
+and rewind if something goes wrong.</p>
     </div>
 
     <pre class="usage"><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_ghost.html'>axi_ghost</a></span>(units = <span class='st'>"cm"</span>, paper = <span class='st'>"A4"</span>)</pre>
@@ -150,12 +150,14 @@ method.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object with the methods given in the <em>Instructions</em> section.</p>
-    <h2 class="hasAnchor" id="instructions"><a class="anchor" href="#instructions"></a>Instructions</h2>
+    <p>An object with the methods given in the <em>Recording Instructions</em> and
+<em>After Recording</em> sections.</p>
+    <h2 class="hasAnchor" id="recording-instructions"><a class="anchor" href="#recording-instructions"></a>Recording Instructions</h2>
 
     
 
-<p>The following methods are available to the returned object:</p><ul>
+<p>The following methods are available for recording drawing instructions and
+mirror those of <code><a href='https://fawkes.data-imaginist.com/reference/axi_manual.html'>axi_manual()</a></code>:</p><ul>
 <li><p><code>connect()</code>: Start a connection to the plotter.</p></li>
 <li><p><code>disconnect()</code>: End a connection to the plotter.</p></li>
 <li><p><code>go_to()</code>: Move the plotter head to the absolute (x, y) position.</p></li>
@@ -170,6 +172,31 @@ the head if not already up.</p></li>
 the head if not already down.</p></li>
 <li><p><code>pen_up()</code>: Raise the pen head.</p></li>
 <li><p><code>pen_down()</code>: Lower the pen head.</p></li>
+<li><p><code>set_pen_color()</code>: Records the color of the pen currently in use.</p></li>
+</ul>
+
+    <h2 class="hasAnchor" id="after-recording"><a class="anchor" href="#after-recording"></a>After Recording</h2>
+
+    
+
+<p>Once the instructions have been recorded there is a bunch of stuff you can do
+with it:</p><ul>
+<li><p><code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code>: Will take the recorded data and send it to the plotter, for real
+this time. During plotting an internal counter will keep track of where you
+are so that you can pause and resume the plot at any time.</p></li>
+<li><p><code>preview()</code>: Will render the plotter movement on screen. You can choose to
+only show drawing movement, or air movement as well. Further, you can
+either set a single color for the drawing lines or use the color encoded
+with the movement. Lastly, it is possible to draw all movement or either
+the remaining or already drawn parts, which uses the internal counter to
+figure out how for proceeded.</p></li>
+<li><p><code>get_pen_position()</code>: Get the internal counter. The counter records
+everything between a pen down and a pen up as a single movement.</p></li>
+<li><p><code>set_pen_position()</code>: Sets a new pen position manually.</p></li>
+<li><p><code>rewind_pen_postion()</code>: Move the pen position backwards in time.</p></li>
+<li><p><code>forward_pen_position()</code>: Move the pen position forward in time.</p></li>
+<li><p><code>reset_pen_position()</code>: Sets the pen position to the start of the plot.</p></li>
+<li><p><code>get_path()</code>: Returns the recorded movement information.</p></li>
 </ul>
 
 

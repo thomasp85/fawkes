@@ -50,7 +50,10 @@
 <meta property="og:description" content="axi_dev() opens up a graphic device that takes plotting instructions from
 e.g. plot() or ggplot2, and renders it with the AxiDraw. ghost_dev()
 behaves like axi_dev(), but instead of sending instructions to the plotter
-it will collect them and allow you to preview the movement of the pen." />
+it will collect them and allow you to preview the movement of the pen and
+send the instructions to the plotter at a later stage. For more complex plots
+it is adviced to use the asynchronous ghost_dev() as it makes it easier to
+pause and rewind the plot if something goes wrong or a pen runs dry." />
 <meta property="og:image" content="https://fawkes.data-imaginist.com/logo.svg" />
 
 
@@ -128,7 +131,10 @@ it will collect them and allow you to preview the movement of the pen." />
     <p><code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev()</a></code> opens up a graphic device that takes plotting instructions from
 e.g. <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> or ggplot2, and renders it with the AxiDraw. <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev()</a></code>
 behaves like <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev()</a></code>, but instead of sending instructions to the plotter
-it will collect them and allow you to preview the movement of the pen.</p>
+it will collect them and allow you to preview the movement of the pen and
+send the instructions to the plotter at a later stage. For more complex plots
+it is adviced to use the asynchronous <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev()</a></code> as it makes it easier to
+pause and rewind the plot if something goes wrong or a pen runs dry.</p>
     </div>
 
     <pre class="usage"><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev</a></span>(
@@ -162,7 +168,7 @@ it will collect them and allow you to preview the movement of the pen.</p>
   hatch_angle = <span class='fl'>45</span>,
   optimize_order = <span class='st'>"all"</span>,
   pens = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>options</span>
+  options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>()
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -198,7 +204,7 @@ the initial pen</p></td>
     <tr>
       <th>ignore_color</th>
       <td><p>Logical. Should changes in color output be ignored? If
-<code>TRUE</code> the plotter will not pause for pen change when the colour changes</p></td>
+<code>TRUE</code> the plotter will not pause for pen change when the color changes</p></td>
     </tr>
     <tr>
       <th>ignore_lwd</th>
@@ -210,12 +216,12 @@ draw lines as a single pen stroke?</p></td>
       <td><p>The overlap between adjacent pen strokes when filling out
 shapes and drawing thick lines, in mm. Setting this to a negative amount will
 cause gaps between the lines. If <code>NA</code> the overlap will be calculated from the
-colour/fill alpha, scaled between <code>min_overlap</code> and <code>0.1</code>.</p></td>
+color/fill alpha, scaled between <code>min_overlap</code> and <code>0.1</code>.</p></td>
     </tr>
     <tr>
       <th>min_overlap</th>
       <td><p>The lower bound in mm of the overlap if it is being
-calculated from the colour/fill alpha. Should be a negative value to ensure
+calculated from the color/fill alpha. Should be a negative value to ensure
 low alpha results in gapped hatching.</p></td>
     </tr>
     <tr>
@@ -246,13 +252,10 @@ drawing primitive.</p></td>
 the future.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev</a></span>(<span class='st'>'A6'</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(mar = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>cars</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='kw'>cars</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
+    <pre class="examples"><div class='input'><span class='kw'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev</a></span>(<span class='st'>'A6'</span>)</div><div class='output co'>#&gt; <span class='error'>Error in rdevice(axidraw_callback, device_name = "ghost_device", ad = axidraw,     size = size, flip = portrait, offset = margins[c(4, 1)],     p_width = paper_size[1], tip_size = tip_size, color = color,     ignore_color = ignore_color, ignore_lwd = ignore_lwd, line_overlap = line_overlap,     min_overlap = min_overlap, draw_fill = draw_fill, hatch_angle = hatch_angle,     optimize_order = optimize_order, collection = list(), current_primitive = "",     first_page = TRUE, delta = c(0, 0), pens = pens, options = options): Evaluation error: argument "pen" is missing, with no default.</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(mar = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>cars</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='kw'>cars</span>))</div><div class='img'><img src='axi_dev-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
 
-<span class='kw'>gd</span><span class='op'>$</span><span class='fu'>preview</span>(plot_air = <span class='fl'>TRUE</span>)</div><div class='img'><img src='axi_dev-1.png' alt='' width='700' height='433' /></div><div class='input'></div></pre>
+<span class='kw'>gd</span><span class='op'>$</span><span class='fu'>preview</span>(plot_air = <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'gd' not found</span></div><div class='input'></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
