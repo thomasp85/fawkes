@@ -144,6 +144,7 @@ it will collect them and allow you to preview the movement of the pen.</p>
   draw_fill = <span class='fl'>TRUE</span>,
   hatch_angle = <span class='fl'>45</span>,
   optimize_order = <span class='st'>"all"</span>,
+  pens = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
   options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>()
 )
 
@@ -160,6 +161,7 @@ it will collect them and allow you to preview the movement of the pen.</p>
   draw_fill = <span class='fl'>TRUE</span>,
   hatch_angle = <span class='fl'>45</span>,
   optimize_order = <span class='st'>"all"</span>,
+  pens = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
   <span class='kw'>options</span>
 )</pre>
 
@@ -244,10 +246,13 @@ drawing primitive.</p></td>
 the future.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev</a></span>(<span class='st'>'A6'</span>)</div><div class='output co'>#&gt; <span class='error'>Error in is_axi_options(options): could not find function "is_axi_options"</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(mar = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>cars</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='kw'>cars</span>))</div><div class='img'><img src='axi_dev-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
+    <pre class="examples"><div class='input'><span class='kw'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev</a></span>(<span class='st'>'A6'</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(mar = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>cars</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='kw'>cars</span>))
+<span class='fu'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/dev.html'>dev.off</a></span>())
 
-<span class='kw'>gd</span><span class='op'>$</span><span class='fu'>preview</span>(plot_air = <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'gd' not found</span></div><div class='input'></div></pre>
+<span class='kw'>gd</span><span class='op'>$</span><span class='fu'>preview</span>(plot_air = <span class='fl'>TRUE</span>)</div><div class='img'><img src='axi_dev-1.png' alt='' width='700' height='433' /></div><div class='input'></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

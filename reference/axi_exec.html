@@ -137,7 +137,9 @@ for setup.</p>
 
 <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_align</a></span>(options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>())
 
-<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_test</a></span>(<span class='kw'>tip_size</span>, <span class='kw'>line_overlap</span>, options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>())</pre>
+<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_test</a></span>(<span class='kw'>tip_size</span>, <span class='kw'>line_overlap</span>, options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>())
+
+<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_align</a></span>(x_offset = <span class='fl'>0</span>, y_offset = <span class='fl'>0</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,6 +161,10 @@ the initial pen</p></td>
 shapes and drawing thick lines, in mm. Setting this to a negative amount will
 cause gaps between the lines.</p></td>
     </tr>
+    <tr>
+      <th>x_offset, y_offset</th>
+      <td><p>The offsets in mm to test</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -170,6 +176,10 @@ cause gaps between the lines.</p></td>
 and vice versa)</p></li>
 <li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_align()</a></code> raises the pen and turns off the stepper motors so the
 carriage can be moved freely.</p></li>
+<li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_test()</a></code> will test the look of filled areas with respect to a
+specific pen setting</p></li>
+<li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_align()</a></code> allows you to test different offset values between two
+pens to determine the correct setting.</p></li>
 </ul>
 
 

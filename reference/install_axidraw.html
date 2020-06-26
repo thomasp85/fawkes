@@ -150,10 +150,13 @@ if that is unset, then the <code>r-reticulate</code> environment will be used.</
 method that will work in the local environment. Change the default to force
 a specific installation method. Note that the "virtualenv" method is not
 available on Windows.</p></dd>
-    <dt><code>conda</code></dt><dd><p>Path to conda executable (or "auto" to find conda using the
-PATH and other conventional install locations).</p></dd>
+    <dt><code>conda</code></dt><dd><p>The path to a <code>conda</code> executable. Use <code>"auto"</code> to allow <code>reticulate</code> to
+automatically find an appropriate <code>conda</code> binary. See <strong>Finding Conda</strong> for more details.</p></dd>
     <dt><code>python_version</code></dt><dd><p>The requested Python version. Ignored when attempting
 to install with a Python virtual environment.</p></dd>
+    <dt><code>pip</code></dt><dd><p>Boolean; use <code>pip</code> for package installation? This is only relevant
+when Conda environments are used, as otherwise packages will be installed
+from the Conda repositories.</p></dd>
   
 </dl></td>
     </tr>
