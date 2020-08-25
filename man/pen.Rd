@@ -28,4 +28,11 @@ to specify specific axidraw options for each pen, e.g. travel speed.
 \examples{
 pen(color = 'forestgreen', tip_size = 2)
 
+# Combine multiple pens
+c(
+  pen(color = 'forestgreen', tip_size = 2),
+  pen(color = 'steelblue', tip_size = 1,
+      options = axi_options(speed_down = 15))
+)
+
 }

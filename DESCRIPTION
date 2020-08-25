@@ -26,7 +26,8 @@ Imports:
     cli,
     TSP,
     devout (>= 0.2.7),
-    grid
+    grid,
+    stats
 Remotes: 
     coolbutuseless/devout
 RoxygenNote: 7.1.0.9000

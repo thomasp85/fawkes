@@ -40,6 +40,7 @@
 #' @param optimize_order Logical. Should the drawing order be optimised so that
 #' pen movement is minimised? Will only affect consecutive calls to the same
 #' drawing primitive.
+#' @param pens One or more pen specifications created using [pen()].
 #' @param options An `axi_options` object. See the documentation for
 #' [axi_options()] for all the settings.
 #'
@@ -458,7 +459,7 @@ fill_stroke <- function(outline, stroke_width, n_strokes) {
   })
 }
 fill_shape <- function(shape, tip_width, overlap, angle = 45, add_stroke = TRUE) {
-  if (is.na(angle)) angle <- runif(1, max = 360)
+  if (is.na(angle)) angle <- stats::runif(1, max = 360)
   shape <- polyclip::polyoffset(shape, -tip_width / 2)
   bbox_x <- range(unlist(lapply(shape, `[[`, 'x')))
   bbox_y <- range(unlist(lapply(shape, `[[`, 'y')))

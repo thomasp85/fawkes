@@ -18,6 +18,13 @@
 #' @examples
 #' pen(color = 'forestgreen', tip_size = 2)
 #'
+#' # Combine multiple pens
+#' c(
+#'   pen(color = 'forestgreen', tip_size = 2),
+#'   pen(color = 'steelblue', tip_size = 1,
+#'       options = axi_options(speed_down = 15))
+#' )
+#'
 pen <- function(color, tip_size = NULL, offset = c(0, 0), options = NULL) {
   if (missing(color)) {
     stop('Pens must have a color', call. = FALSE)

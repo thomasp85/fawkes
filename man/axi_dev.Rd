@@ -81,6 +81,8 @@ with. If \code{NA} a random angle will be chosen for each fill.}
 pen movement is minimised? Will only affect consecutive calls to the same
 drawing primitive.}
 
+\item{pens}{One or more pen specifications created using \code{\link[=pen]{pen()}}.}
+
 \item{options}{An \code{axi_options} object. See the documentation for
 \code{\link[=axi_options]{axi_options()}} for all the settings.}
 }
