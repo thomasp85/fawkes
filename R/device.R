@@ -383,7 +383,13 @@ create_open_stroke <- function(paths, state) {
 }
 create_fill <- function(fill, state) {
   fill <- polyclip::polyclip(fill, clip_box(state), 'intersection')
-  fill_shape(fill, state$rdata$tip_size, get_overlap(state, fill = TRUE), state$rdata$hatch_angle)
+  n_angles <- length(state$rdata$hatch_angle)
+  fills <- vector('list', n_angles)
+  for (i in seq_len(n_angles)) {
+    angle <- state$rdata$hatch_angle[i]
+    fills[[i]] <- fill_shape(fill, state$rdata$tip_size, get_overlap(state, fill = TRUE), angle, add_stroke = i == n_angles)
+  }
+  unlist(fills, recursive = FALSE)
 }
 create_circle_fill <- function(x, y, r, angles, state) {
   overlap <- get_overlap(state, fill = TRUE)
@@ -451,7 +457,7 @@ fill_stroke <- function(outline, stroke_width, n_strokes) {
     stroke
   })
 }
-fill_shape <- function(shape, tip_width, overlap, angle = 45) {
+fill_shape <- function(shape, tip_width, overlap, angle = 45, add_stroke = TRUE) {
   if (is.na(angle)) angle <- runif(1, max = 360)
   shape <- polyclip::polyoffset(shape, -tip_width / 2)
   bbox_x <- range(unlist(lapply(shape, `[[`, 'x')))
@@ -468,6 +474,9 @@ fill_shape <- function(shape, tip_width, overlap, angle = 45) {
     y = y * cos_t + x * sin_t + mean(bbox_y)
   )
   fill <- polyclip::polyclip(list(fill), shape, 'intersection', closed = FALSE)
+  if (!add_stroke) {
+    return(fill)
+  }
   shape <- lapply(shape, function(x) {
     x$x <- c(x$x, x$x[1])
     x$y <- c(x$y, x$y[1])
