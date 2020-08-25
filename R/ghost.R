@@ -131,7 +131,7 @@ AxiGhost <- R6::R6Class('AxiGhost',
       private$pens[[color]] <- pen
       invisible(self)
     },
-    preview = function(plot_air = FALSE, air_color = 'red', pen_color = NULL, size = 1, paper_color = 'white', background = 'grey', show = 'all') {
+    preview = function(plot_air = FALSE, air_color = 'red', pen_color = NULL, size = 1, paper_color = 'white', background = 'grey', show = 'all', size_mod = 1) {
       show <- match.arg(show, c('all', 'drawn', 'remaining'))
       path <- self$get_path()
       ids <- rle(path$raised)
@@ -155,13 +155,13 @@ AxiGhost <- R6::R6Class('AxiGhost',
       grid::grid.newpage()
       grid::grid.rect(gp = grid::gpar(fill = background, col = NA))
       grid::grid.rect(x = grid::unit(0, 'npc'), y = grid::unit(1, 'npc'),
-                      width = grid::unit(private$paper[2], 'mm'),
-                      height = grid::unit(private$paper[1], 'mm'),
+                      width = grid::unit(private$paper[2] * size_mod, 'mm'),
+                      height = grid::unit(private$paper[1] * size_mod, 'mm'),
                       just = c('left', 'top'),
                       gp = grid::gpar(fill = paper_color, col = NA))
       grid::grid.polyline(
-        x = grid::unit(path$x, private$unit),
-        y = grid::unit(1, 'npc') - grid::unit(path$y, private$unit),
+        x = grid::unit(path$x * size_mod, private$unit),
+        y = grid::unit(1, 'npc') - grid::unit(path$y * size_mod, private$unit),
         id = path$id,
         gp = grid::gpar(col = color, lwd = size)
       )
