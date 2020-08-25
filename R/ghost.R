@@ -230,6 +230,32 @@ AxiGhost <- R6::R6Class('AxiGhost',
         raised = private$path$raised[ind],
         color = private$path$color[ind]
       )
+    },
+    summary = function(verbose = TRUE) {
+      path <- self$get_path()
+      path <- self$get_path()
+      ids <- rle(path$raised)
+      path$id <- rep(seq_along(ids$lengths), ids$lengths)
+      dists <- lapply(split(path, path$id), function(p) {
+        list(
+          dist = sum(sqrt(diff(p$x)^2 + diff(p$y)^2)),
+          color = if (p$raised[1]) 'raised' else p$color[1]
+        )
+      })
+      color <- vapply(dists, `[[`, character(1), 'color')
+      dists <- vapply(dists, `[[`, numeric(1), 'dist')
+      info <- lapply(split(dists, color), sum)
+      if (isTRUE(verbose)) {
+        cli::cli_alert_info("Plotter movement summary:")
+        for (i in names(info)) {
+          if (i != 'raised') {
+            col_fmt <- cli::make_ansi_style(i, bg = TRUE)
+            cli::cli_alert_info("{i} {col_fmt('  ')}: {round(info[[i]], digits = 1)}cm")
+          }
+        }
+        cli::cli_alert_info("Air-travel: {round(info[['raised']], digits = 1)}cm")
+      }
+      invisible(info)
     }
   ),
   private = list(
