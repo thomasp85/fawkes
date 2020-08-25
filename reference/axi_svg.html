@@ -130,13 +130,13 @@ a different result than rendering directly to axi_dev()." />
 AxiDraw penplotter for drawing. This function uses the build-in svg drawing
 capabilities of the pyaxidraw library so rendering an svg with
 <code><a href='https://rdrr.io/r/grDevices/cairo.html'>grDevices::svg()</a></code> and then using <code>axi_svg</code> to draw it will likely produce
-a different result than rendering directly to <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev()</a></code>.</p>
+a different result than rendering directly to <code><a href='axi_dev.html'>axi_dev()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_svg.html'>axi_svg</a></span>(
+    <pre class="usage"><span class='fu'>axi_svg</span>(
   <span class='kw'>file</span>,
   capture = <span class='fl'>FALSE</span>,
-  options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>(),
+  options = <span class='fu'><a href='axi_options.html'>axi_options</a></span>(),
   layer = <span class='kw'>NULL</span>,
   copies = <span class='fl'>1L</span>,
   page_delay = <span class='fl'>15</span>,
@@ -162,7 +162,7 @@ returned as a new svg.</p></td>
     <tr>
       <th>options</th>
       <td><p>An <code>axi_options</code> object. See the documentation for
-<code><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options()</a></code> for all the settings.</p></td>
+<code><a href='axi_options.html'>axi_options()</a></code> for all the settings.</p></td>
     </tr>
     <tr>
       <th>layer</th>
@@ -212,7 +212,7 @@ will be used for drawing.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='kw'>logo</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'example.svg'</span>, package = <span class='st'>'fawkes'</span>)
-<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_svg.html'>axi_svg</a></span>(<span class='kw'>logo</span>)
+<span class='fu'>axi_svg</span>(<span class='kw'>logo</span>)
 }
 </div></pre>
   </div>

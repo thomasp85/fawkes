@@ -129,17 +129,17 @@ lets you query information about the plotter or execute small commands useful
 for setup.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_version</a></span>(options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>())
+    <pre class="usage"><span class='fu'>axi_version</span>(options = <span class='fu'><a href='axi_options.html'>axi_options</a></span>())
 
-<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_sysinfo</a></span>(options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>())
+<span class='fu'>axi_sysinfo</span>(options = <span class='fu'><a href='axi_options.html'>axi_options</a></span>())
 
-<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_toggle_pen</a></span>(options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>())
+<span class='fu'>axi_toggle_pen</span>(options = <span class='fu'><a href='axi_options.html'>axi_options</a></span>())
 
-<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_align</a></span>(options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>())
+<span class='fu'>axi_align</span>(options = <span class='fu'><a href='axi_options.html'>axi_options</a></span>())
 
-<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_test</a></span>(<span class='kw'>tip_size</span>, <span class='kw'>line_overlap</span>, options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>())
+<span class='fu'>axi_pen_test</span>(<span class='kw'>tip_size</span>, <span class='kw'>line_overlap</span>, options = <span class='fu'><a href='axi_options.html'>axi_options</a></span>())
 
-<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_align</a></span>(x_offset = <span class='fl'>0</span>, y_offset = <span class='fl'>0</span>)</pre>
+<span class='fu'>axi_pen_align</span>(x_offset = <span class='fl'>0</span>, y_offset = <span class='fl'>0</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,7 +147,7 @@ for setup.</p>
     <tr>
       <th>options</th>
       <td><p>An <code>axi_options</code> object. See the documentation for
-<code><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options()</a></code> for all the settings. Many are not relevant for these
+<code><a href='axi_options.html'>axi_options()</a></code> for all the settings. Many are not relevant for these
 function.</p></td>
     </tr>
     <tr>
@@ -170,15 +170,15 @@ cause gaps between the lines.</p></td>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The different functions have various, unrelated, uses:</p><ul>
-<li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_version()</a></code> returns the version of the AxiDraw software</p></li>
-<li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_sysinfo()</a></code> returns the EBB firmware version and system information</p></li>
-<li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_toggle_pen()</a></code> toggles the position of the pen (raises it if lowered
+<li><p><code>axi_version()</code> returns the version of the AxiDraw software</p></li>
+<li><p><code>axi_sysinfo()</code> returns the EBB firmware version and system information</p></li>
+<li><p><code>axi_toggle_pen()</code> toggles the position of the pen (raises it if lowered
 and vice versa)</p></li>
-<li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_align()</a></code> raises the pen and turns off the stepper motors so the
+<li><p><code>axi_align()</code> raises the pen and turns off the stepper motors so the
 carriage can be moved freely.</p></li>
-<li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_test()</a></code> will test the look of filled areas with respect to a
+<li><p><code>axi_pen_test()</code> will test the look of filled areas with respect to a
 specific pen setting</p></li>
-<li><p><code><a href='https://fawkes.data-imaginist.com/reference/axi_exec.html'>axi_pen_align()</a></code> allows you to test different offset values between two
+<li><p><code>axi_pen_align()</code> allows you to test different offset values between two
 pens to determine the correct setting.</p></li>
 </ul>
 

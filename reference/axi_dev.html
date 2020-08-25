@@ -128,16 +128,16 @@ pause and rewind the plot if something goes wrong or a pen runs dry." />
     </div>
 
     <div class="ref-description">
-    <p><code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev()</a></code> opens up a graphic device that takes plotting instructions from
-e.g. <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> or ggplot2, and renders it with the AxiDraw. <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev()</a></code>
-behaves like <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev()</a></code>, but instead of sending instructions to the plotter
+    <p><code>axi_dev()</code> opens up a graphic device that takes plotting instructions from
+e.g. <code><a href='https://rdrr.io/r/graphics/plot.default.html'>plot()</a></code> or ggplot2, and renders it with the AxiDraw. <code>ghost_dev()</code>
+behaves like <code>axi_dev()</code>, but instead of sending instructions to the plotter
 it will collect them and allow you to preview the movement of the pen and
 send the instructions to the plotter at a later stage. For more complex plots
-it is adviced to use the asynchronous <code><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev()</a></code> as it makes it easier to
+it is adviced to use the asynchronous <code>ghost_dev()</code> as it makes it easier to
 pause and rewind the plot if something goes wrong or a pen runs dry.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>axi_dev</a></span>(
+    <pre class="usage"><span class='fu'>axi_dev</span>(
   paper_size = <span class='st'>"A4"</span>,
   portrait = <span class='fl'>TRUE</span>,
   margins = <span class='fl'>20</span>,
@@ -151,10 +151,10 @@ pause and rewind the plot if something goes wrong or a pen runs dry.</p>
   hatch_angle = <span class='fl'>45</span>,
   optimize_order = <span class='st'>"all"</span>,
   pens = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>()
+  options = <span class='fu'><a href='axi_options.html'>axi_options</a></span>()
 )
 
-<span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev</a></span>(
+<span class='fu'>ghost_dev</span>(
   paper_size = <span class='st'>"A4"</span>,
   portrait = <span class='fl'>TRUE</span>,
   margins = <span class='fl'>20</span>,
@@ -168,7 +168,7 @@ pause and rewind the plot if something goes wrong or a pen runs dry.</p>
   hatch_angle = <span class='fl'>45</span>,
   optimize_order = <span class='st'>"all"</span>,
   pens = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  options = <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options</a></span>()
+  options = <span class='fu'><a href='axi_options.html'>axi_options</a></span>()
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -242,7 +242,7 @@ drawing primitive.</p></td>
     <tr>
       <th>options</th>
       <td><p>An <code>axi_options</code> object. See the documentation for
-<code><a href='https://fawkes.data-imaginist.com/reference/axi_options.html'>axi_options()</a></code> for all the settings.</p></td>
+<code><a href='axi_options.html'>axi_options()</a></code> for all the settings.</p></td>
     </tr>
     </table>
 
@@ -252,7 +252,7 @@ drawing primitive.</p></td>
 the future.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://fawkes.data-imaginist.com/reference/axi_dev.html'>ghost_dev</a></span>(<span class='st'>'A6'</span>)
+    <pre class="examples"><div class='input'><span class='kw'>gd</span> <span class='op'>&lt;-</span> <span class='fu'>ghost_dev</span>(<span class='st'>'A6'</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(mar = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>))
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>cars</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/lowess.html'>lowess</a></span>(<span class='kw'>cars</span>))
