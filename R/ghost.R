@@ -186,8 +186,7 @@ AxiGhost <- R6::R6Class('AxiGhost',
 
       current_color <- ''
       on.exit({
-        ad$move_to(0, 0)
-        ad$disconnect()
+        axi_align()
       })
       for (p in path) {
         if (p$color[1] != current_color && private$pen_has_color) {
@@ -206,6 +205,7 @@ AxiGhost <- R6::R6Class('AxiGhost',
         ad$pen_up()
         private$pen_location <- private$pen_location + 1L
       }
+      ad$move_to(0, 0)
     },
     get_pen_position = function() {
       private$pen_location
