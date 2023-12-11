@@ -6,12 +6,9 @@
 \alias{fawkes-package}
 \title{fawkes: An R Interface to the AxiDraw Plotter}
 \description{
-\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Provides interface to the AxiDraw pen plotter through the python
-    API. 'fawkes' contain both a graphic device that allows you to control the
-    plotter through the R graphic engine, as well as facilities to control it
-    directly.
+Provides interface to the AxiDraw pen plotter through the python API. 'fawkes' contain both a graphic device that allows you to control the plotter through the R graphic engine, as well as facilities to control it directly.
 }
 \seealso{
 Useful links:

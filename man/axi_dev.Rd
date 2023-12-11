@@ -17,9 +17,11 @@ axi_dev(
   min_overlap = -20,
   draw_fill = TRUE,
   fill_type = "hatch",
+  circle_erode_threshold = 2,
   hatch_angle = 45,
   connect_hatch = TRUE,
   optimize_order = "all",
+  instant = FALSE,
   pens = list(),
   options = axi_options()
 )
@@ -36,6 +38,7 @@ ghost_dev(
   min_overlap = -20,
   draw_fill = TRUE,
   fill_type = "hatch",
+  circle_erode_threshold = 2,
   hatch_angle = 45,
   connect_hatch = TRUE,
   optimize_order = "all",
@@ -78,7 +81,12 @@ low alpha results in gapped hatching.}
 
 \item{draw_fill}{Logical. Should fill be drawn using hatching?}
 
-\item{fill_type}{Currently ignored}
+\item{fill_type}{How should shapes be filled? Either \code{'hatch'} to fill with
+straight parallel line or \code{'erode'} for filling with consecutively shrunken
+versions of the shape.}
+
+\item{circle_erode_threshold}{At which radius (in mm) should circles begin to
+be filled by erosion instead of hatching when \code{fill_type = 'erode'}?}
 
 \item{hatch_angle}{Angle in degrees that the hatching of fill should be drawn
 with. If \code{NA} a random angle will be chosen for each fill.}
@@ -90,6 +98,9 @@ pen be lifted between each hatch line?}
 consecutive lines of the same color, \code{'primitive'} to optimize the drawing
 order of lines from the same consecutive primitive (e.g. circle, segment, or
 polygon) of the same color, or \code{'none'} to not do any optimization.}
+
+\item{instant}{Should plotting happen the instant a primitive is drawn or
+only when needed (before pen change, when finishing)}
 
 \item{pens}{One or more pen specifications created using \code{\link[=pen]{pen()}}.}
 
