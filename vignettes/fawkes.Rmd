@@ -1,0 +1,127 @@
+---
+title: "Getting Started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+set.seed(900)
+```
+
+This guide is intended as a short introduction to the fawkes package. By the end
+of this guide you should know the most basic functionality of the package and be
+ready to explore further with your own plots and artwork.
+
+## Setup
+
+To kick things off we will load the library:
+
+```{r setup}
+library(fawkes)
+```
+
+If this is your first time using fawkes you will need to install the Python 
+interface to AxiDraw. This can be done very simply from the package:
+
+```{r, eval=FALSE}
+install_axidraw()
+```
+
+After that you should be good to go. One thing that you may one to do, however,
+is to register the size of your AxiDraw machine. By default the Python interface 
+will assume you have an A4 version and clip any commands that takes the head 
+outside of that area. If you have a larger version this will result in some very
+odd plots. Because this setting is something that is often set on a permanent 
+basis (few of us have multiple different AxiDraw machines to switch between), it 
+can be set as an option and just forget about:
+
+```{r, eval=FALSE}
+# Put this in your .Rprofile file to make it permanent
+options(fawkes.model = 'A3')
+```
+
+## Package overview
+fawkes comes with a bunch of different tools and operating modes. While this 
+guide will mainly focus on using fawkes as a graphic device we will give a brief
+overview of some of the other tools here:
+
+### Manual control
+You can control the AxiDraw completely manually, if you so desire, by creating
+a manual connection with the `axi_manual()` function:
+
+```{r, eval=FALSE}
+ad <- axi_manual()
+```
+
+The returned object is an R6 object with different methods attached, such as 
+`move_to()`, `pen_up()`, `line_rel()`, etc. See the documentation for 
+`axi_manual()` to get a complete overview of it. The manual control is what 
+drives most of the additional features in fawkes (e.g. the device capabilities).
+
+### SVG rendering
+While I would argue that the main reason for using fawkes is to use it to draw R 
+graphics with it, fawkes also contains a function that takes an SVG file and 
+draws it. Have a look at `axi_svg()` to get an overview of the different options
+and possibilities. The functionality is a very direct wrapper around the SVG 
+drawing capabilities in the Python interface. Because of this the API and 
+capabilities are not comparable with the graphic device provided by fawkes. If 
+you want to use the graphic device to render an SVG (e.g. to get better control 
+over hatching etc) have a look at the 
+[gridSVG](https://cran.r-project.org/package=gridSVG) package for rendering SVG 
+through R graphics.
+
+### Utilities
+There are a couple of small utility functions that you may end up using a lot 
+during the course of working with fawkes. `axi_align()` will raise the pen and 
+turn the motor off, allowing you to freely move the head around (most often to
+move it to the start position). `axi_pen_test()` will allow you to test 
+different settings for a single pen, both when it comes to tip size, overlap, 
+and different AxiDraw settings such as movement speed, delay, etc. The function
+will draw a small icon showing both a filled shape and a thick line. 
+`axi_pen_align()` will allow you to test different offset settings between two 
+pens by overlaying an `x` and a `+` from the different pens at different 
+offsets. This is an important feature if you want to mix pens with different 
+barrel size.
+
+## Using fawkes as a graphic device
+fawkes comes with two different graphic devices to use. `axi_dev()` will open up
+a device that continually sends instructions to the AxiDraw. While this is 
+certainly a viable approach, I would at all times advice the use of the other
+device: `ghost_dev()`. `ghost_dev()` opens up a device that will collect 
+instructions but not send them off to the AxiDraw. These instructions can be 
+inspected for correctness and plotted at your leisure. During plotting from a 
+`ghost_dev()` you can pause and rewind the pen if something goes wrong which
+gives a small window for error correction (pen plotters are quite unforgiving in
+general). Because of these benefits this guide will focus solemnly on the 
+`ghost_dev()` device.
+
+### Some art to draw
+Before we *can* draw we need something *to* draw. This should ultimately be 
+something of your own doing, but for this guide we'll make something up to get
+you started. We'll use the ambient package to create some noise and the isoband
+package to convert it to contour lines.
+
+```{r}
+library(ambient)
+library(isoband)
+library(dplyr, warn.conflicts = FALSE)
+
+noise <- long_grid(
+  x = seq(-sqrt(2), sqrt(2), length.out = 1000 * sqrt(2)),
+  y = seq(-1, 1, length.out = 1000)
+) %>% 
+  mutate(
+    noise = fracture(gen_perlin, fbm, octaves = 3, x = x, y = y),
+    rings = gen_waves(x = x, y = y, frequency = 0.2),
+    full = noise * rings
+  ) %>% 
+  as.matrix(full)
+```
+

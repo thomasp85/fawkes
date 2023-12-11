@@ -48,6 +48,12 @@ c.axi_pen <- function(..., recursive = FALSE) {
   class(pens) <- 'axi_pen'
   pens
 }
+#' @export
+`[.axi_pen` <- function(x, ..., drop = TRUE) {
+  x <- NextMethod()
+  class(x) <- 'axi_pen'
+  x
+}
 
 #' @export
 print.axi_pen <- function(x, ...) {

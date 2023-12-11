@@ -58,6 +58,11 @@ axi_align <- function(options = axi_options()) {
   ad$plot_run(FALSE)
 }
 #' @rdname axi_exec
+#' @export
+axi_off <- function() {
+  axi_align()
+}
+#' @rdname axi_exec
 #'
 #' @param tip_size The size of the tip (i.e. the width of the line it draws) of
 #' the initial pen
@@ -75,6 +80,37 @@ axi_pen_test <- function(tip_size, line_overlap, options = axi_options()) {
   grid.segments(unit(1, 'cm') * tip_size, unit(1, 'npc') - unit(4, 'cm') * tip_size,
                 unit(4, 'cm') * tip_size, unit(1, 'npc') - unit(1, 'cm') * tip_size,
                 gp = gpar(lwd = 20 * tip_size))
+  dev.off()
+}
+#' @rdname axi_exec
+#'
+#' @param pen_a,pen_b The two pen specifications that should be tested for
+#' alignment with each other
+#' @importFrom grid grid.newpage grid.circle grid.polyline grid.polygon unit gpar
+#' @importFrom grDevices dev.off
+#' @export
+axi_align_test <- function(pen_a, pen_b) {
+  color_a <- pen_a[[1]]$color
+  color_b <- pen_b[[1]]$color
+  axi_dev(portrait = FALSE, margins = 0, color = NA, tip_size = 0, line_overlap = 0,
+          ignore_color = FALSE, ignore_lwd = FALSE, pens = c(pen_a, pen_b))
+  grid.newpage()
+  # Pen A
+  grid.circle(unit(1.5, 'cm'), unit(1, 'npc') - unit(1.5, 'cm'), unit(1, 'cm'),
+              gp = gpar(fill = color_a, col = NA))
+  angle <- seq(-pi/2 + pi/4, pi/2 + pi/4, length.out = 180)
+  grid.polyline(unit(4 + cos(angle), 'cm'), unit(1, 'npc') - unit(1.5 + sin(angle), 'cm'),
+            gp = gpar(fill = NA, col = color_a))
+  grid.polygon(unit(6.5 + c(-1, -1, 1), 'cm'), unit(1, 'npc') - unit(1.5 + c(-1, 1, 1), 'cm'),
+               gp = gpar(fill = color_a, col = NA))
+  # Pen B
+  grid.circle(unit(1.5, 'cm'), unit(1, 'npc') - unit(1.5, 'cm'), unit(1, 'cm'),
+              gp = gpar(fill = NA, col = color_b))
+  angle <- seq(pi/2 + pi/4, pi + pi/2 + pi/4, length.out = 180)
+  grid.polyline(unit(4 + cos(angle), 'cm'), unit(1, 'npc') - unit(1.5 + sin(angle), 'cm'),
+            gp = gpar(fill = NA, col = color_b))
+  grid.polygon(unit(6.5 + c(-1, 1, 1), 'cm'), unit(1, 'npc') - unit(1.5 + c(-1, -1, 1), 'cm'),
+               gp = gpar(fill = color_b, col = NA))
   dev.off()
 }
 #' @rdname axi_exec

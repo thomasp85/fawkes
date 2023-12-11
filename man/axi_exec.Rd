@@ -6,7 +6,9 @@
 \alias{axi_sysinfo}
 \alias{axi_toggle_pen}
 \alias{axi_align}
+\alias{axi_off}
 \alias{axi_pen_test}
+\alias{axi_align_test}
 \alias{axi_pen_align}
 \title{Execute direct commands to the AxiDraw plotter}
 \usage{
@@ -18,7 +20,11 @@ axi_toggle_pen(options = axi_options())
 
 axi_align(options = axi_options())
 
+axi_off()
+
 axi_pen_test(tip_size, line_overlap, options = axi_options())
+
+axi_align_test(pen_a, pen_b)
 
 axi_pen_align(x_offset = 0, y_offset = 0)
 }
@@ -33,6 +39,9 @@ the initial pen}
 \item{line_overlap}{The overlap between adjacent pen strokes when filling out
 shapes and drawing thick lines, in mm. Setting this to a negative amount will
 cause gaps between the lines.}
+
+\item{pen_a, pen_b}{The two pen specifications that should be tested for
+alignment with each other}
 
 \item{x_offset, y_offset}{The offsets in mm to test}
 }

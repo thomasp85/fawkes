@@ -16,7 +16,9 @@ axi_dev(
   line_overlap = 0.1,
   min_overlap = -20,
   draw_fill = TRUE,
+  fill_type = "hatch",
   hatch_angle = 45,
+  connect_hatch = TRUE,
   optimize_order = "all",
   pens = list(),
   options = axi_options()
@@ -33,7 +35,9 @@ ghost_dev(
   line_overlap = 0.1,
   min_overlap = -20,
   draw_fill = TRUE,
+  fill_type = "hatch",
   hatch_angle = 45,
+  connect_hatch = TRUE,
   optimize_order = "all",
   pens = list(),
   options = axi_options()
@@ -74,12 +78,18 @@ low alpha results in gapped hatching.}
 
 \item{draw_fill}{Logical. Should fill be drawn using hatching?}
 
+\item{fill_type}{Currently ignored}
+
 \item{hatch_angle}{Angle in degrees that the hatching of fill should be drawn
 with. If \code{NA} a random angle will be chosen for each fill.}
 
-\item{optimize_order}{Logical. Should the drawing order be optimised so that
-pen movement is minimised? Will only affect consecutive calls to the same
-drawing primitive.}
+\item{connect_hatch}{Should hatches be connected if possible or should the
+pen be lifted between each hatch line?}
+
+\item{optimize_order}{Either \code{'all'} to optimize the drawing order of all
+consecutive lines of the same color, \code{'primitive'} to optimize the drawing
+order of lines from the same consecutive primitive (e.g. circle, segment, or
+polygon) of the same color, or \code{'none'} to not do any optimization.}
 
 \item{pens}{One or more pen specifications created using \code{\link[=pen]{pen()}}.}
 

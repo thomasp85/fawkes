@@ -30,5 +30,11 @@ Imports:
     stats
 Remotes: 
     coolbutuseless/devout
-RoxygenNote: 7.1.0.9000
+RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
+Suggests: 
+    knitr,
+    rmarkdown,
+    ambient,
+    isoband
+VignetteBuilder: knitr

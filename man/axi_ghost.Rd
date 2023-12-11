@@ -67,6 +67,9 @@ everything between a pen down and a pen up as a single movement.
 \item \code{forward_pen_position()}: Move the pen position forward in time.
 \item \code{reset_pen_position()}: Sets the pen position to the start of the plot.
 \item \code{get_path()}: Returns the recorded movement information.
+\item \code{sort_line()}: Reorder the lines so that all lines of the same colo'r are
+drawn at the same time
+\item \code{remove_color()}: Remove lines of a certain color
 }
 }
 

@@ -48,6 +48,9 @@
 #' - `forward_pen_position()`: Move the pen position forward in time.
 #' - `reset_pen_position()`: Sets the pen position to the start of the plot.
 #' - `get_path()`: Returns the recorded movement information.
+#' - `sort_line()`: Reorder the lines so that all lines of the same colo'r are
+#'   drawn at the same time
+#' - `remove_color()`: Remove lines of a certain color
 #'
 #' @return An object with the methods given in the *Recording Instructions* and
 #' *After Recording* sections.
@@ -128,7 +131,7 @@ AxiGhost <- R6::R6Class('AxiGhost',
     set_pen_color = function(color, pen, ...) {
       private$pen_has_color <- TRUE
       private$current_color <- color
-      private$pens[[color]] <- pen
+      private$pens[[color]] <- pen[[1]]
       invisible(self)
     },
     preview = function(plot_air = FALSE, air_color = 'red', pen_color = NULL, size = 1, paper_color = 'white', background = 'grey', show = 'all', size_mod = 1) {
@@ -198,10 +201,12 @@ AxiGhost <- R6::R6Class('AxiGhost',
           ad$update_options(private$pens[[p$color[1]]]$options)
           current_color <- p$color[1]
         }
+        suspendInterrupts({
         ad$move_to(p$x[1], p$y[1])
         for (i in seq_along(p$x)[-1]) {
           ad$line_to(p$x[i], p$y[i])
         }
+        })
         ad$pen_up()
         private$pen_location <- private$pen_location + 1L
       }
@@ -250,12 +255,34 @@ AxiGhost <- R6::R6Class('AxiGhost',
         for (i in names(info)) {
           if (i != 'raised') {
             col_fmt <- cli::make_ansi_style(i, bg = TRUE)
-            cli::cli_alert_info("{i} {col_fmt('  ')}: {round(info[[i]], digits = 1)}cm")
+            d <- info[[i]]
+            unit <- 'cm'
+            if (d > 100) {
+              d <- d / 100
+              unit <- 'm'
+            }
+            cli::cli_alert_info("{i} {col_fmt('  ')}: {round(d, digits = 1)}{unit}")
           }
         }
-        cli::cli_alert_info("Air-travel: {round(info[['raised']], digits = 1)}cm")
+        d <- info[['raised']]
+        unit <- 'cm'
+        if (d > 100) {
+          d <- d / 100
+          unit <- 'm'
+        }
+        cli::cli_alert_info("Air-travel: {round(d, digits = 1)}{unit}")
       }
       invisible(info)
+    },
+    sort_lines = function(order = NULL) {
+      if (is.null(order)) {
+        order <- unique(private$path$color)
+      }
+      private$path <- private$path[order(match(private$path$color, order)), , drop = FALSE]
+    },
+    remove_color = function(color) {
+      color <- rgb(t(col2rgb(color)), maxColorValue = 255)
+      private$path <- private$path[!private$path$color %in% color, , drop = FALSE]
     }
   ),
   private = list(

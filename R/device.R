@@ -35,11 +35,19 @@
 #' calculated from the color/fill alpha. Should be a negative value to ensure
 #' low alpha results in gapped hatching.
 #' @param draw_fill Logical. Should fill be drawn using hatching?
+#' @param fill_type How should shapes be filled? Either `'hatch'` to fill with
+#' straight parallel line or `'erode'` for filling with consecutively shrunken
+#' versions of the shape.
+#' @param circle_erode_threshold At which radius (in mm) should circles begin to
+#' be filled by erosion instead of hatching when `fill_type = 'erode'`?
 #' @param hatch_angle Angle in degrees that the hatching of fill should be drawn
 #' with. If `NA` a random angle will be chosen for each fill.
-#' @param optimize_order Logical. Should the drawing order be optimised so that
-#' pen movement is minimised? Will only affect consecutive calls to the same
-#' drawing primitive.
+#' @param connect_hatch Should hatches be connected if possible or should the
+#' pen be lifted between each hatch line?
+#' @param optimize_order Either `'all'` to optimize the drawing order of all
+#' consecutive lines of the same color, `'primitive'` to optimize the drawing
+#' order of lines from the same consecutive primitive (e.g. circle, segment, or
+#' polygon) of the same color, or `'none'` to not do any optimization.
 #' @param pens One or more pen specifications created using [pen()].
 #' @param options An `axi_options` object. See the documentation for
 #' [axi_options()] for all the settings.
@@ -60,8 +68,9 @@
 axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
                     color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
                     line_overlap = 0.1, min_overlap = -20, draw_fill = TRUE,
-                    hatch_angle = 45, optimize_order = 'all', pens = list(),
-                    options = axi_options()) {
+                    fill_type = 'hatch', circle_erode_threshold = 2,
+                    hatch_angle = 45, connect_hatch = TRUE,
+                    optimize_order = 'all', pens = list(), options = axi_options()) {
   paper_size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
   size <- paper_size - c(margins[2] + margins[4], margins[1] + margins[3])
@@ -71,13 +80,15 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
   pens <- validate_pens(pens, color, tip_size, options)
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
+  fill_type <- match.arg(fill_type, c('hatch', 'erode'))
   axidraw <- axi_manual(units = 'cm', options)
   rdevice(axidraw_callback, device_name = 'axi_device',
     ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
     p_width = paper_size[1], tip_size = tip_size, color = color,
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
-    line_overlap = line_overlap, min_overlap = min_overlap,
-    draw_fill = draw_fill, hatch_angle = hatch_angle,
+    line_overlap = line_overlap, min_overlap = min_overlap, draw_fill = draw_fill,
+    fill_type = fill_type, circle_erode_threshold = circle_erode_threshold,
+    hatch_angle = hatch_angle, connect_hatch = connect_hatch,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
     first_page = TRUE, delta = c(0, 0), pens = pens, options = options
   )
@@ -87,8 +98,9 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
 ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size = 1,
                       color = 'black', ignore_color = TRUE, ignore_lwd = FALSE,
                       line_overlap = 0.1, min_overlap = -20, draw_fill = TRUE,
-                      hatch_angle = 45, optimize_order = 'all', pens = list(),
-                      options = axi_options()) {
+                      fill_type = 'hatch', circle_erode_threshold = 2,
+                      hatch_angle = 45, connect_hatch = TRUE,
+                      optimize_order = 'all', pens = list(), options = axi_options()) {
   axidraw <- axi_ghost(units = 'cm', paper = paper_size)
   paper_size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
@@ -99,12 +111,14 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
   pens <- validate_pens(pens, color, tip_size, options)
   color <- as.vector(col2rgb(color, TRUE))
   optimize_order <- match.arg(optimize_order, c('none', 'primitive', 'all'))
+  fill_type <- match.arg(fill_type, c('hatch', 'erode'))
   rdevice(axidraw_callback, device_name = 'ghost_device',
     ad = axidraw, size = size, flip = portrait, offset = margins[c(4, 1)],
     p_width = paper_size[1], tip_size = tip_size, color = color,
     ignore_color = ignore_color, ignore_lwd = ignore_lwd,
-    line_overlap = line_overlap, min_overlap = min_overlap,
-    draw_fill = draw_fill, hatch_angle = hatch_angle,
+    line_overlap = line_overlap, min_overlap = min_overlap, draw_fill = draw_fill,
+    fill_type = fill_type, circle_erode_threshold = circle_erode_threshold,
+    hatch_angle = hatch_angle, connect_hatch = connect_hatch,
     optimize_order = optimize_order, collection = list(), current_primitive = '',
     first_page = TRUE, delta = c(0, 0), pens = pens, options = options
   )
@@ -115,6 +129,7 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
 #' @keywords internal
 #' @export
 axidraw_callback <- function(device_call, args, state) {
+  suspendInterrupts({
   state <- switch(device_call,
     open = .axi_open(args, state),
     close = .axi_close(args, state),
@@ -128,6 +143,7 @@ axidraw_callback <- function(device_call, args, state) {
     polygon = .axi_polygon(args, state),
     path = .axi_path(args, state)
   )
+  })
   state
 }
 
@@ -189,7 +205,11 @@ axidraw_callback <- function(device_call, args, state) {
   # Fill
   if (has_fill(state)) {
     state <- update_fill(state, 'circle')
-    fill <- create_circle_fill(args$x, args$y, args$r, angles, state)
+    if (args$r < state$rdata$circle_erode_threshold && state$rdata$fill_type == 'hatch') {
+      fill <- create_circle_fill(args$x, args$y, args$r, angles, state)
+    } else {
+      fill <- create_fill(shape, state)
+    }
     state <- collect_lines(fill, state)
   }
 
@@ -384,13 +404,33 @@ create_open_stroke <- function(paths, state) {
 }
 create_fill <- function(fill, state) {
   fill <- polyclip::polyclip(fill, clip_box(state), 'intersection')
+  if (state$rdata$fill_type == 'hatch') {
+    create_hatch_fill(fill, state)
+  } else {
+    create_erode_fill(fill, state)
+  }
+}
+create_hatch_fill <- function(fill, state) {
   n_angles <- length(state$rdata$hatch_angle)
   fills <- vector('list', n_angles)
   for (i in seq_len(n_angles)) {
     angle <- state$rdata$hatch_angle[i]
-    fills[[i]] <- fill_shape(fill, state$rdata$tip_size, get_overlap(state, fill = TRUE), angle, add_stroke = i == n_angles)
+    fills[[i]] <- fill_shape(fill, state$rdata$tip_size, get_overlap(state, fill = TRUE), angle, add_stroke = i == n_angles, state$rdata$connect_hatch)
   }
   unlist(fills, recursive = FALSE)
+}
+create_erode_fill <- function(fill, state) {
+  erosion_delta <- -get_overlap(state, fill = TRUE)
+  recursive_erode(fill, erosion_delta)
+}
+recursive_erode <- function(fill, delta) {
+  erosion <- polyclip::polyoffset(fill, delta)
+  if (length(erosion) == 0) {
+    return(list(fill))
+  }
+  erosion <- lapply(erosion, recursive_erode, delta = delta)
+  erosion <- unlist(erosion[lengths(erosion) > 0], recursive = FALSE)
+  c(list(fill), erosion)
 }
 create_circle_fill <- function(x, y, r, angles, state) {
   overlap <- get_overlap(state, fill = TRUE)
@@ -458,7 +498,8 @@ fill_stroke <- function(outline, stroke_width, n_strokes) {
     stroke
   })
 }
-fill_shape <- function(shape, tip_width, overlap, angle = 45, add_stroke = TRUE) {
+fill_shape <- function(shape, tip_width, overlap, angle = 45, add_stroke = TRUE,
+                       connect_hatch = TRUE) {
   if (is.na(angle)) angle <- stats::runif(1, max = 360)
   shape <- polyclip::polyoffset(shape, -tip_width / 2)
   bbox_x <- range(unlist(lapply(shape, `[[`, 'x')))
@@ -470,11 +511,18 @@ fill_shape <- function(shape, tip_width, overlap, angle = 45, add_stroke = TRUE)
   theta <- 2 * pi * angle / 360
   cos_t <- cos(theta)
   sin_t <- sin(theta)
-  fill <- list(
+  fill <- data.frame(
     x = x * cos_t - y * sin_t + mean(bbox_x),
     y = y * cos_t + x * sin_t + mean(bbox_y)
   )
-  fill <- polyclip::polyclip(list(fill), shape, 'intersection', closed = FALSE)
+  fill <- split(fill, rep(seq_len(nrow(fill)/2), each = 2))
+  fill <- unlist(lapply(fill, function(f) {
+    polyclip::polyclip(list(f), shape, 'intersection', closed = FALSE)
+  }), recursive = FALSE)
+  if (connect_hatch) {
+    fill <- list(x = unlist(lapply(fill, `[[`, 'x')), y = unlist(lapply(fill, `[[`, 'y')))
+    fill <- polyclip::polyclip(list(fill), polyclip::polyoffset(shape, 0.001), 'intersection', closed = FALSE)
+  }
   if (!add_stroke) {
     return(fill)
   }
@@ -592,10 +640,10 @@ update_pen <- function(state, color) {
         cli::cli_alert_info("Predefined pen with {col} color detected. Press enter when switch is complete")
         readline()
       }
-      pen <- state$rdata$pens[[col]]
-      state$rdata$tip_size <- as.numeric(pen$tip_size)
-      state$rdata$delta <- as.numeric(pen$offset)
-      state$rdata$ad$update_options(pen$options)
+      pen <- state$rdata$pens[col]
+      state$rdata$tip_size <- as.numeric(pen[[1]]$tip_size)
+      state$rdata$delta <- as.numeric(pen[[1]]$offset)
+      state$rdata$ad$update_options(pen[[1]]$options)
     }
     state$rdata$color <- color
     state$rdata$ad$set_pen_color(col, pen)
@@ -637,11 +685,11 @@ prepare_path <- function(path, state) {
 joins <- c('round', 'miter', 'bevel')
 ends <- c('openround', 'openbutt', 'opensquare')
 
-optimize_order <- function(paths) {
+optimize_order <- function(paths, ...) {
   starts <- do.call(cbind, lapply(paths, `[[`, 'start'))
   ends <- do.call(cbind, lapply(paths, `[[`, 'end'))
-  dist <- asym_dist(starts, ends)
-  tour <- TSP::solve_TSP(TSP::ATSP(dist))
+  dist <- asym_dist(starts, ends)^2
+  tour <- TSP::solve_TSP(TSP::ATSP(dist), ...)
   paths[as.integer(tour)]
 }
 
