@@ -21,6 +21,9 @@ install_axidraw <- function(path = NULL, ...) {
     on.exit(unlink(dir, recursive = TRUE))
   }
   reticulate::py_install(path, ...)
+  for (dep in list.files(file.path(path, "prebuilt_dependencies"), pattern = ".whl", full.names = TRUE)) {
+    reticulate::py_install(dep)
+  }
   invisible(NULL)
 }
 
