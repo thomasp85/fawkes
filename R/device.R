@@ -48,6 +48,8 @@
 #' consecutive lines of the same color, `'primitive'` to optimize the drawing
 #' order of lines from the same consecutive primitive (e.g. circle, segment, or
 #' polygon) of the same color, or `'none'` to not do any optimization.
+#' @param instant Should plotting happen the instant a primitive is drawn or
+#' only when needed (before pen change, when finishing)
 #' @param pens One or more pen specifications created using [pen()].
 #' @param options An `axi_options` object. See the documentation for
 #' [axi_options()] for all the settings.
@@ -70,7 +72,8 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
                     line_overlap = 0.1, min_overlap = -20, draw_fill = TRUE,
                     fill_type = 'hatch', circle_erode_threshold = 2,
                     hatch_angle = 45, connect_hatch = TRUE,
-                    optimize_order = 'all', pens = list(), options = axi_options()) {
+                    optimize_order = 'all', instant = FALSE, pens = list(),
+                    options = axi_options()) {
   paper_size <- paper_dimensions(paper_size, portrait)
   margins <- expand_margins(margins)
   size <- paper_size - c(margins[2] + margins[4], margins[1] + margins[3])
@@ -89,8 +92,9 @@ axi_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size =
     line_overlap = line_overlap, min_overlap = min_overlap, draw_fill = draw_fill,
     fill_type = fill_type, circle_erode_threshold = circle_erode_threshold,
     hatch_angle = hatch_angle, connect_hatch = connect_hatch,
-    optimize_order = optimize_order, collection = list(), current_primitive = '',
-    first_page = TRUE, delta = c(0, 0), pens = pens, options = options
+    optimize_order = optimize_order, instant = instant, collection = list(),
+    current_primitive = '', first_page = TRUE, delta = c(0, 0), pens = pens,
+    options = options
   )
 }
 #' @rdname axi_dev
@@ -119,8 +123,9 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
     line_overlap = line_overlap, min_overlap = min_overlap, draw_fill = draw_fill,
     fill_type = fill_type, circle_erode_threshold = circle_erode_threshold,
     hatch_angle = hatch_angle, connect_hatch = connect_hatch,
-    optimize_order = optimize_order, collection = list(), current_primitive = '',
-    first_page = TRUE, delta = c(0, 0), pens = pens, options = options
+    optimize_order = optimize_order, instant = FALSE, collection = list(),
+    current_primitive = '', first_page = TRUE, delta = c(0, 0), pens = pens,
+    options = options
   )
   invisible(axidraw)
 }
@@ -586,6 +591,7 @@ collect_lines <- function(lines, state, as_one = TRUE) {
       lines = lines
     )
   }
+  if (state$rdata$instant) draw_collection(state, '')
   state
 }
 draw_collection <- function(state, new_primitive) {
