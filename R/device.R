@@ -153,7 +153,7 @@ axidraw_callback <- function(device_call, args, state) {
         textUTF8 = .axi_text(args, state)
       )
     })
-  }, error = function(e) warning(conditionMessage(e)))
+  }, error = function(e) .signalSimpleWarning(conditionMessage(e), conditionCall(e)))
   state
 }
 
@@ -546,6 +546,7 @@ recursive_erode <- function(fill, delta) {
   c(list(fill), recursive_erode(erosion, delta))
 }
 create_circle_fill <- function(x, y, r, angles, state) {
+  if (r <= state$rdata$tip_size / 2) return(list())
   overlap <- get_overlap(state, fill = TRUE)
   radii <- seq(r - state$rdata$tip_size / 2, 0, by = -(state$rdata$tip_size - overlap))
   radii <- unique(c(radii, 0))

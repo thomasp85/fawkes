@@ -10,8 +10,6 @@ status](https://github.com/thomasp85/fawkes/workflows/R-CMD-check/badge.svg)](ht
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![R-CMD-check](https://github.com/thomasp85/fawkes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thomasp85/fawkes/actions/workflows/R-CMD-check.yaml)
-[![Codecov test
-coverage](https://codecov.io/gh/thomasp85/fawkes/graph/badge.svg)](https://app.codecov.io/gh/thomasp85/fawkes)
 <!-- badges: end -->
 
 This package provides an R API to control the [AxiDraw pen
@@ -56,7 +54,7 @@ library(ggplot2)
 p <- ggplot(mtcars) + 
   geom_point(aes(disp, mpg)) + 
   facet_wrap(~ gear) + 
-  theme_bw(base_size = 6) + 
+  theme_bw(base_size = 10) + 
   theme(
     plot.background = element_blank(),
     panel.background = element_blank()
@@ -64,38 +62,6 @@ p <- ggplot(mtcars) +
 
 gd <- ghost_dev('A6', portrait = FALSE, margins = 5, ignore_color = TRUE)
 p
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
 invisible(dev.off())
 
 gd$preview()
@@ -118,38 +84,6 @@ optimisation:
 gd <- ghost_dev('A6', portrait = FALSE, margins = 5, ignore_color = TRUE,
                 optimize_order = 'none')
 p
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
-#> Warning in value[[3L]](cond): wrong sign in 'by' argument
 invisible(dev.off())
 
 gd$preview(plot_air = TRUE)
