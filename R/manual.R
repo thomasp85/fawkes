@@ -41,7 +41,8 @@ axi_manual <- function(units = 'cm', options = axi_options()) {
   AxiManual$new(axidraw)
 }
 
-AxiManual <- R6::R6Class('AxiManual',
+#' @importFrom R6 R6Class
+AxiManual <- R6Class('AxiManual',
   public = list(
     initialize = function(axidraw) {
       private$axidraw <- axidraw

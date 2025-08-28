@@ -62,7 +62,9 @@ axi_ghost <- function(units = 'cm', paper = 'A4') {
   AxiGhost$new(units, paper)
 }
 
-AxiGhost <- R6::R6Class('AxiGhost',
+
+#' @importFrom R6 R6Class
+AxiGhost <- R6Class('AxiGhost',
   public = list(
     initialize = function(unit, paper) {
       private$unit <- unit

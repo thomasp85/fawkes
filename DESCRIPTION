@@ -38,5 +38,6 @@ Suggests:
     knitr,
     rmarkdown,
     ambient,
-    isoband
+    isoband,
+    dplyr
 VignetteBuilder: knitr
