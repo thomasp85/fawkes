@@ -27,7 +27,9 @@ Imports:
     TSP,
     devout (>= 0.2.7),
     grid,
-    stats
+    stats,
+    textshaping,
+    systemfonts
 Remotes: 
     coolbutuseless/devout
 RoxygenNote: 7.2.3

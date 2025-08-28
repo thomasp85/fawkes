@@ -134,21 +134,26 @@ ghost_dev <- function(paper_size = "A4", portrait = TRUE, margins = 20, tip_size
 #' @keywords internal
 #' @export
 axidraw_callback <- function(device_call, args, state) {
-  suspendInterrupts({
-  state <- switch(device_call,
-    open = .axi_open(args, state),
-    close = .axi_close(args, state),
-    onExit = .axi_abort(args, state),
-    clip = .axi_clip(args, state),
-    newPage = .axi_new_page(args, state),
-    circle = .axi_circle(args, state),
-    rect = .axi_rect(args, state),
-    line = .axi_line(args, state),
-    polyline = .axi_polyline(args, state),
-    polygon = .axi_polygon(args, state),
-    path = .axi_path(args, state)
-  )
-  })
+  tryCatch({
+    suspendInterrupts({
+      state <- switch(device_call,
+        open = .axi_open(args, state),
+        close = .axi_close(args, state),
+        onExit = .axi_abort(args, state),
+        clip = .axi_clip(args, state),
+        newPage = .axi_new_page(args, state),
+        circle = .axi_circle(args, state),
+        rect = .axi_rect(args, state),
+        line = .axi_line(args, state),
+        polyline = .axi_polyline(args, state),
+        polygon = .axi_polygon(args, state),
+        path = .axi_path(args, state),
+        metricInfo = .axi_metrics(args, state),
+        strWidthUTF8 = .axi_strwidth(args, state),
+        textUTF8 = .axi_text(args, state)
+      )
+    })
+  }, error = function(e) warning(conditionMessage(e)))
   state
 }
 
@@ -157,7 +162,15 @@ axidraw_callback <- function(device_call, args, state) {
   state$dd$bottom <- state$rdata$size[2]
   state$dd$clipRight <- state$rdata$size[1]
   state$dd$clipBottom <- state$rdata$size[2]
+  state$dd$cra = c(0.9 * 12, 1.2 * 12) * 0.3937008
+  state$dd$xCharOffset = 0.4900 * 0.3937008;
+  state$dd$yCharOffset = 0.3333 * 0.3937008;
+  state$dd$yLineBias = 0.2;
   state$dd$ipr <- c(0.03937, 0.03937)
+  state$dd$wantSymbolUTF8 <- TRUE
+  state$dd$hasTextUTF8 <- TRUE
+  state$dd$useRotatedTextInContour <- TRUE
+
   state$rdata$last_primitive <- NA
   state$rdata$calls <- list()
   state$rdata$ad$connect()
@@ -322,6 +335,101 @@ axidraw_callback <- function(device_call, args, state) {
   state
 }
 
+.axi_metrics <- function(args, state) {
+  c <- abs(args$c)
+  font <- systemfonts::match_fonts(
+    family = if (state$gc$fontface == 5) "symbol" else state$gc$fontfamily,
+    italic = state$gc$fontface %in% c(3, 4),
+    weight = if (state$gc$fontface %in% c(2, 4)) "bold" else "normal"
+  )
+  metrics <- systemfonts::glyph_info(
+    rawToChar(as.raw(c)),
+    size = state$gc$ps * state$gc$cex,
+    res = 1e4,
+    path = font$path,
+    index = font$index
+  )
+  list(
+    ascent = metrics$bbox[[1]][4] * 72/1e4 * 0.3937008,
+    descent = -metrics$bbox[[1]][3] * 72/1e4 * 0.3937008,
+    width = metrics$width[1] * 72/1e4 * 0.3937008
+  )
+}
+
+.axi_strwidth <- function(args, state) {
+  font <- systemfonts::match_fonts(
+    family = if (state$gc$fontface == 5) "symbol" else state$gc$fontfamily,
+    italic = state$gc$fontface %in% c(3, 4),
+    weight = if (state$gc$fontface %in% c(2, 4)) "bold" else "normal"
+  )
+  if (length(font$features[[1]]) == 0) {
+    font$features[[1]] <- list(character(), integer())
+  }
+  list(
+    width = textshaping::text_width(
+      args$str,
+      size = state$gc$ps * state$gc$cex,
+      res = 1e4,
+      features = font$features,
+      path = font$path,
+      index = font$index
+    ) * 72/1e4 * 0.3937008
+  )
+}
+
+.axi_text <- function(args, state) {
+  font <- systemfonts::match_fonts(
+    family = if (state$gc$fontface == 5) "symbol" else state$gc$fontfamily,
+    italic = state$gc$fontface %in% c(3, 4),
+    weight = if (state$gc$fontface %in% c(2, 4)) "bold" else "normal"
+  )
+  if (length(font$features[[1]]) == 0) {
+    font$features[[1]] <- list(character(), integer())
+  }
+  shape <- textshaping::shape_text(
+    args$str,
+    size = state$gc$ps * state$gc$cex,
+    res = 1e4,
+    features = font$features,
+    hjust = args$hadj,
+    path = font$path,
+    index = font$index
+  )
+  outline <- systemfonts::glyph_outline(
+    glyph = shape$shape$index,
+    path = shape$shape$font_path,
+    index = shape$shape$font_index,
+    size = shape$shape$font_size,
+    tolerance = 0.02
+  )
+  outline$x <- outline$x + shape$shape$x_offset[outline$glyph]
+  outline$y <- -outline$y# + shape$shape$y_offset[outline$glyph]
+
+  if (args$rot != 0) {
+    rot <- - 2 * pi * args$rot / 360
+    x <- outline$x * cos(rot) - outline$y * sin(rot)
+    y <- outline$x * sin(rot) + outline$y * cos(rot)
+    outline$x <- x
+    outline$y <- y
+  }
+  outline$x <- outline$x * 0.3937008 + args$x
+  outline$y <- outline$y * 0.3937008 + args$y
+  outline <- split(outline, outline$glyph)
+  state <- update_stroke(state, 'text')
+  orig_fill <- state$rdata$fill_type
+  state$rdata$fill_type <- "erode"
+  on.exit(state$rdata$fill_type <- orig_fill)
+  for (glyph in outline) {
+    path <- lapply(split(glyph[, c("x", "y")], glyph$contour), as.list)
+    fill <- create_fill(path, state)
+    state <- collect_lines(fill, state, as_one = FALSE)
+    stroke <- create_closed_stroke(path, state)
+    state <- collect_lines(stroke, state)
+  }
+
+  state
+}
+
 has_stroke <- function(state) {
   state$gc$lwd != 0 && state$gc$col[4] != 0  && state$gc$lty != -1
 }
@@ -426,16 +534,16 @@ create_hatch_fill <- function(fill, state) {
 }
 create_erode_fill <- function(fill, state) {
   erosion_delta <- -get_overlap(state, fill = TRUE)
-  recursive_erode(fill, erosion_delta)
+  fill <- recursive_erode(fill, erosion_delta)
+  fill <- unlist(fill, recursive = FALSE, use.names = FALSE)
+  fill[lengths(fill) != 0]
 }
 recursive_erode <- function(fill, delta) {
-  erosion <- polyclip::polyoffset(fill, delta)
+  erosion <- polyclip::polyoffset(fill, delta, jointype = "round")
   if (length(erosion) == 0) {
     return(list(fill))
   }
-  erosion <- lapply(erosion, recursive_erode, delta = delta)
-  erosion <- unlist(erosion[lengths(erosion) > 0], recursive = FALSE)
-  c(list(fill), erosion)
+  c(list(fill), recursive_erode(erosion, delta))
 }
 create_circle_fill <- function(x, y, r, angles, state) {
   overlap <- get_overlap(state, fill = TRUE)
@@ -507,6 +615,9 @@ fill_shape <- function(shape, tip_width, overlap, angle = 45, add_stroke = TRUE,
                        connect_hatch = TRUE) {
   if (is.na(angle)) angle <- stats::runif(1, max = 360)
   shape <- polyclip::polyoffset(shape, -tip_width / 2)
+  if (length(shape) == 0) {
+    return(list())
+  }
   bbox_x <- range(unlist(lapply(shape, `[[`, 'x')))
   bbox_y <- range(unlist(lapply(shape, `[[`, 'y')))
   max_length <- max(diff(bbox_x), diff(bbox_y))
