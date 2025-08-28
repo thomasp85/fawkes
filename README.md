@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# fawkes <a href='https://fawkes.data-imaginist.com'><img src='man/figures/logo.png' align="right" height="138.5" /></a>
+# fawkes <a href="https://fawkes.data-imaginist.com"><img src="man/figures/logo.png" align="right" height="139" alt="fawkes website" /></a>
 
 <!-- badges: start -->
 

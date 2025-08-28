@@ -6,5 +6,5 @@ authors:
     href: https://data-imaginist.com
 
 template:
-  params:
-    bootswatch: paper
+  bootstrap: 5
+  bootswatch: paper
