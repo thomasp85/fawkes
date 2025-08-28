@@ -9,6 +9,9 @@
 status](https://github.com/thomasp85/fawkes/workflows/R-CMD-check/badge.svg)](https://github.com/thomasp85/fawkes/actions)
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![R-CMD-check](https://github.com/thomasp85/fawkes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thomasp85/fawkes/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/thomasp85/fawkes/graph/badge.svg)](https://app.codecov.io/gh/thomasp85/fawkes)
 <!-- badges: end -->
 
 This package provides an R API to control the [AxiDraw pen
@@ -24,11 +27,11 @@ e.g.  base and grid graphics to plotter movement.
 fawkes is pretty niche by its very nature and it is unlikely that it
 will be submitted to CRAN. This should not be conflated with it not
 being ready for use. The current version can be installed directly from
-github using devtools:
+github using pak:
 
 ``` r
-# install.packages('devtools')
-devtools::install_github('thomasp85/fawkes')
+# install.packages('pak')
+pak::pak('thomasp85/fawkes')
 ```
 
 ## Examples
@@ -61,6 +64,38 @@ p <- ggplot(mtcars) +
 
 gd <- ghost_dev('A6', portrait = FALSE, margins = 5, ignore_color = TRUE)
 p
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
 invisible(dev.off())
 
 gd$preview()
@@ -83,20 +118,44 @@ optimisation:
 gd <- ghost_dev('A6', portrait = FALSE, margins = 5, ignore_color = TRUE,
                 optimize_order = 'none')
 p
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
+#> Warning in value[[3L]](cond): wrong sign in 'by' argument
 invisible(dev.off())
 
 gd$preview(plot_air = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
-
-## Limitations
-
-As can be seen from the plots above, there is currently no text support
-in fawkes. This shortcoming is likely to change as I improve the text
-and font support in R in general. Further, there is no way to plot
-raster images, a limitation that is pretty much guarantied with a pen
-plotter.
 
 ## Code of Conduct
 
