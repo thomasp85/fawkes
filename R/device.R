@@ -284,7 +284,7 @@ axidraw_callback <- function(device_call, args, state) {
   # Fill
   if (has_fill(state)) {
     state <- update_fill(state, 'polygon')
-    fill <- create_fill(list(shape), state)
+    fill <- create_fill(shape, state)
     state <- collect_lines(fill, state)
   }
 
