@@ -1,36 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://fawkes.data-imaginist.com/index.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/axi_dev.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/axi_exec.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/axi_ghost.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/axi_manual.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/axi_options.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/axi_svg.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/axidraw_callback.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/fawkes-package.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/install_axidraw.html</loc>
-  </url>
-  <url>
-    <loc>https://fawkes.data-imaginist.com/reference/pen.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://fawkes.data-imaginist.com/404.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/LICENSE-text.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/LICENSE.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/articles/fawkes.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/articles/index.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/authors.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/index.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/axi_dev.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/axi_exec.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/axi_ghost.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/axi_manual.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/axi_options.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/axi_svg.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/axidraw_callback.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/fawkes-package.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/index.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/install_axidraw.html</loc></url>
+<url><loc>https://fawkes.data-imaginist.com/reference/pen.html</loc></url>
 </urlset>
+
