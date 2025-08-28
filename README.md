@@ -5,8 +5,6 @@
 
 <!-- badges: start -->
 
-[![R build
-status](https://github.com/thomasp85/fawkes/workflows/R-CMD-check/badge.svg)](https://github.com/thomasp85/fawkes/actions)
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![R-CMD-check](https://github.com/thomasp85/fawkes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thomasp85/fawkes/actions/workflows/R-CMD-check.yaml)
@@ -90,9 +88,3 @@ gd$preview(plot_air = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
-
-## Code of Conduct
-
-Please note that the ‘fawkes’ project is released with a [Contributor
-Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
-you agree to abide by its terms.
